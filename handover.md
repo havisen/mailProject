@@ -21,7 +21,7 @@ The transcript was not copied literally: its Markdown export had corrupted PHP s
 
 Earlier planning split the work into `docs/sender-plan.md` (sender/platform S0–S9) and `docs/contacts-deepseek.md` (contacts C1–C4), with ownership and migration reservations in `docs/workstreams.md`.
 
-Repository setup began on 2026-10-23: initialized a local Git repository on `main` and added a root `.gitignore` covering environment files, Composer dependencies, test output, and private runtime storage. The GitHub remote is not yet configured because the exact owner/repository URL has not been verified.
+Repository setup completed on 2026-10-23: initialized local `main`, added a root `.gitignore` covering environment files, Composer dependencies, test output, and private runtime storage, connected `origin` to `https://github.com/havisen/mailProject.git`, preserved the repository's existing initial commit, and pushed the combined history.
 
 The external API is strictly POST /api/v1/mail/send. No read/status, inbox, contact/task, or OTP endpoints are planned. The sender slice does not depend on IMAP and defers drafts, attachments, replies and Sent APPEND. DeepSeek owns contacts only; the sender contributor owns shared authentication/bootstrap and integrates contacts after publishing that contract.
 
@@ -41,17 +41,15 @@ No schema has been applied and no production database exists. Migration `002_cre
 
 The SMTP integration was reviewed against the transcript and project contracts. `tests/Unit/run-unit.php` contains 40 checks covering cipher behavior, endpoint restrictions, account-service behavior, and safe SMTP result classification. PHP and Composer are not installed or available on `PATH` on this Windows machine, so PHP lint and the test runner were not executed. No database, HTTP, provider, hosting, or accessibility checks have run.
 
-Repository preparation checks: reviewed hidden and large files, scanned tracked content for common secret assignments, staged the complete tree, and ran `git diff --cached --check`. No credential values or oversized files were identified. Remote connectivity and push remain unverified.
+Repository preparation checks: reviewed hidden and large files, scanned tracked content for common secret assignments, staged the complete tree, and ran `git diff --cached --check`. No credential values or oversized files were identified. Remote connectivity, history integration, branch tracking, and the initial `main` push were verified.
 
 ## Known issues and limitations
 
 The scaffold is deliberately nonfunctional. `composer.json`, bootstrap, routes, middleware, account controller/templates, and `.htaccess` are still empty. There is no migration runner or dependency container. The real PHPMailer `SmtpProbe` adapter is missing. Migration 002, repository SQL, runtime crypto, DNS policy, real-provider TLS/authentication, and account HTTP/CSRF flows are unverified. Backup and recovery behavior remains unimplemented.
 
-The GitHub remote URL is still required. GitHub CLI is unavailable and the accessible browser session is signed out, so the private repository cannot be identified reliably by name alone.
-
 ## Next step
 
-Configure `origin` using the exact GitHub repository URL and push `main` when that URL is available. Complete S0 by checking PHP web/CLI, required extensions, private storage, database grants, one-minute cron, certificate trust, and SMTP 465/587. Then implement S1/S2 (Composer/bootstrap, configuration, migration runner, tests, administrator sessions, CSRF, and panel shell). After that, apply migration 002 and wire the S3 account core into a controller, protected routes, templates, navigation, dependency container, and a PHPMailer probe. Run the 40 module checks and disposable MySQL/MariaDB integration tests before claiming S3 accepted.
+Complete S0 by checking PHP web/CLI, required extensions, private storage, database grants, one-minute cron, certificate trust, and SMTP 465/587. Then implement S1/S2 (Composer/bootstrap, configuration, migration runner, tests, administrator sessions, CSRF, and panel shell). After that, apply migration 002 and wire the S3 account core into a controller, protected routes, templates, navigation, dependency container, and a PHPMailer probe. Run the 40 module checks and disposable MySQL/MariaDB integration tests before claiming S3 accepted.
 
 Contacts contributor: no C1–C4 implementation was present in the supplied attachment. Read `docs/contacts-deepseek.md` and `docs/workstreams.md`; begin C1/C2 in isolated contact files and migration 010. Authenticated HTTP verification waits for S1/S2. Do not edit sender/shared platform files. Every contributor updates root `handover.md` and their workstream handover; the integrator merges both factual updates.
 
