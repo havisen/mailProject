@@ -1,0 +1,32 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Composer and test output
+/vendor/
+/.phpunit.cache/
+/.phpunit.result.cache
+/coverage/
+
+# Runtime data
+/storage/backups/*
+!/storage/backups/.gitkeep
+/storage/cache/attachments/*
+!/storage/cache/attachments/.gitkeep
+/storage/cache/messages/*
+!/storage/cache/messages/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+/storage/queue/*
+!/storage/queue/.gitkeep
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+
+# Local editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
