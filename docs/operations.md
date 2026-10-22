@@ -31,6 +31,10 @@ Logs: 30 days. Audit/submission metadata: 90 days. Temporary uploads: 24 hours. 
 
 Add exact installation, upgrade, rotation, cleanup, backup, restore, and rollback commands as their features are implemented.
 
+## Implemented worker command
+
+After applying migration 007, run the bounded CLI with an absolute PHP 8.4 path. Separate one-minute cron entries should invoke `php bin/worker.php --queue=outbound --budget=40`, `--queue=sync`, and `--queue=maintenance`; use absolute installation paths as shown in `docs/jobs.md`. Overlap is supported by row/account leases. Exit 2 means the database was unavailable and no work was intentionally processed. Keep outbound disabled after restore until leased sends are reconciled. The migration runner and feature handler registrations remain integration prerequisites.
+
 ## SMTP account operational notes
 
 - Back up credential master keys separately from, but together with, the database recovery set. Losing all historical keys makes stored SMTP passwords unrecoverable.

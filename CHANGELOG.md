@@ -9,6 +9,10 @@ next contributor, who must follow the same rule.
 
 # Changelog
 
+## Unreleased
+
+- Added Assignment 06 database jobs: atomic leased claims, per-account serialization, handler-owned expired recovery, resumable checkpoints, worker heartbeats, independent queues, a bounded CLI, tests, and operations documentation. Migration 007 is not applied or database-verified.
+
 ## SMTP account core — partial sender package S3
 
 Integrated the usable result from the supplied DeepSeek transcript into the project. Added versioned Sodium credential encryption, account/field context binding, SMTP endpoint allow-list and special-address blocking, migration 002, prepared account persistence, account lifecycle validation, and a transport-independent SMTP connection tester. Added a 40-check dependency-free test runner plus account, security, configuration, operations, roadmap, and handover documentation.

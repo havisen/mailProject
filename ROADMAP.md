@@ -47,7 +47,7 @@ Status: not_started. Dependencies: None.
 
 ### Milestone 1 — Foundation and installation
 
-Status: not_started. Dependencies: 0.
+Status: in_progress. Dependencies: 0. The isolated database-job runtime is implemented but not database-tested or integrated because hosting/foundation prerequisites remain missing.
 
 **Work:** Set up routing, templates, services, validated configuration, private storage, structured logs, request IDs, explicit migrations, and CLI commands. Add database jobs with leases, interrupted-job recovery, bounded processing, and separate outbound/sync scheduling.
 

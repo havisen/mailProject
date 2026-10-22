@@ -17,6 +17,10 @@ Administrator; mail accounts with encrypted credentials; folders and sync checkp
 
 Use stable public IDs. Unique remote occurrence identity is account, folder, UIDVALIDITY, UID. Keep Message-ID non-unique. Contact/task links retain minimal message snapshots when caches expire. Deleting contacts or tasks never deletes remote email.
 
+## Job schema
+
+Unapplied migration `007_create_jobs.php` creates `jobs`, `job_account_leases`, and `worker_runs`. Claim indexes cover queue/status/schedule/priority and expired leases; target and account indexes support recovery and diagnostics. `(type, dedupe_key)` prevents duplicate logical work when a caller supplies a key. Account lease rows serialize network operations without holding a database transaction open. MySQL/MariaDB `SKIP LOCKED`, JSON, InnoDB, and microsecond `DATETIME` support are prerequisites. There is no down migration; back up and inspect before manual rollback. See `docs/jobs.md` for state and recovery rules.
+
 ## Delivery state
 
 queued -> sending -> accepted, failed, or uncertain; queued may also become expired or canceled. Track Sent-copy status separately. SMTP acceptance uncertainty requires review or reconciliation, never automatic resend. Use leased jobs and atomic idempotency constraints. Document final schema, indexes, migration commands, and rollback implications as implemented.
