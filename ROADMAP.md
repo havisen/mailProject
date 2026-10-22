@@ -77,7 +77,7 @@ Status: blocked. Dependencies: 2. The platform-independent SMTP account core is 
 
 ### Milestone 4 — Durable outbound service
 
-Status: not_started. Dependencies: 3.
+Status: blocked. Dependencies: 3. The isolated durable submission core is implemented, but account/foundation prerequisites, database execution, transport integration, and real-provider verification are missing.
 
 **Work:** Create durable immutable submissions with To/Cc/Bcc, subject, text/HTML, attachments, Message-ID, expiry, limits, and account identity checks. Track queued/sending/accepted/failed/uncertain/expired/canceled states. Keep Sent-copy state separate; use bounded retries only when non-acceptance is established. Never auto-resend uncertain sends.
 

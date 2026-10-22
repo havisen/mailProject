@@ -21,6 +21,10 @@ Use stable public IDs. Unique remote occurrence identity is account, folder, UID
 
 Unapplied migration `007_create_jobs.php` creates `jobs`, `job_account_leases`, and `worker_runs`. Claim indexes cover queue/status/schedule/priority and expired leases; target and account indexes support recovery and diagnostics. `(type, dedupe_key)` prevents duplicate logical work when a caller supplies a key. Account lease rows serialize network operations without holding a database transaction open. MySQL/MariaDB `SKIP LOCKED`, JSON, InnoDB, and microsecond `DATETIME` support are prerequisites. There is no down migration; back up and inspect before manual rollback. See `docs/jobs.md` for state and recovery rules.
 
+## Submission schema
+
+The unapplied zero-byte `003_create_submissions_and_api_keys.php` placeholder was replaced with `003_create_submissions.php` before any migration execution. It creates `outgoing_submissions`, encrypted `submission_recipients`, and separate `submission_recipient_outcomes`. Unique public ID, Message-ID, and browser-operation indexes enforce stable identity/deduplication; state/account/deadline indexes support Outbox and maintenance. Account deletion is restricted. Sent-copy state is separate. API keys/idempotency remain a later additive migration. Migration 003 requires 002; job enqueue requires 007. See `docs/submissions.md` for recovery and retention.
+
 ## Delivery state
 
 queued -> sending -> accepted, failed, or uncertain; queued may also become expired or canceled. Track Sent-copy status separately. SMTP acceptance uncertainty requires review or reconciliation, never automatic resend. Use leased jobs and atomic idempotency constraints. Document final schema, indexes, migration commands, and rollback implications as implemented.

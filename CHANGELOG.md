@@ -12,6 +12,7 @@ next contributor, who must follow the same rule.
 ## Unreleased
 
 - Added Assignment 06 database jobs: atomic leased claims, per-account serialization, handler-owned expired recovery, resumable checkpoints, worker heartbeats, independent queues, a bounded CLI, tests, and operations documentation. Migration 007 is not applied or database-verified.
+- Added Assignment 07 outgoing persistence: encrypted immutable snapshots and recipients, stable IDs/Message-IDs, transactional enqueue, browser operation deduplication, safe cancellation/claim transitions, recipient outcomes, conservative retry/uncertain recovery, tests, and documentation. Migration 003 is not applied or database-verified.
 
 ## SMTP account core — partial sender package S3
 

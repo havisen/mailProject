@@ -153,8 +153,8 @@ class JobRepository
                      ON DUPLICATE KEY UPDATE
                         job_id = IF(lease_expires_at <= VALUES(updated_at), VALUES(job_id), job_id),
                         worker_id = IF(lease_expires_at <= VALUES(updated_at), VALUES(worker_id), worker_id),
-                        lease_expires_at = IF(lease_expires_at <= VALUES(updated_at), VALUES(lease_expires_at), lease_expires_at),
-                        updated_at = IF(lease_expires_at <= VALUES(updated_at), VALUES(updated_at), updated_at)'
+                        updated_at = IF(lease_expires_at <= VALUES(updated_at), VALUES(updated_at), updated_at),
+                        lease_expires_at = IF(lease_expires_at <= VALUES(updated_at), VALUES(lease_expires_at), lease_expires_at)'
                 );
                 $lease->execute([
                     ':account_reference' => $job['account_reference'],

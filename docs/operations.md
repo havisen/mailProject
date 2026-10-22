@@ -35,6 +35,8 @@ Add exact installation, upgrade, rotation, cleanup, backup, restore, and rollbac
 
 After applying migration 007, run the bounded CLI with an absolute PHP 8.4 path. Separate one-minute cron entries should invoke `php bin/worker.php --queue=outbound --budget=40`, `--queue=sync`, and `--queue=maintenance`; use absolute installation paths as shown in `docs/jobs.md`. Overlap is supported by row/account leases. Exit 2 means the database was unavailable and no work was intentionally processed. Keep outbound disabled after restore until leased sends are reconciled. The migration runner and feature handler registrations remain integration prerequisites.
 
+Submission recovery must distinguish `queued` from `sending`. An expired leased job for a `sending` submission becomes `uncertain` and requires operator/provider reconciliation; never update it back to queued manually. A deadline is checked only before an attempt begins. Content-key loss prevents decryption and must produce a visible failure without starting SMTP. Purge terminal private content only through the future bounded maintenance handler and only after backup/retention policy is confirmed.
+
 ## SMTP account operational notes
 
 - Back up credential master keys separately from, but together with, the database recovery set. Losing all historical keys makes stored SMTP passwords unrecoverable.

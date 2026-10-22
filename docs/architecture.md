@@ -21,6 +21,8 @@ Browser requests enter public/index.php, then authentication/middleware, control
 
 The mail server owns received messages, folders, and remote flags. The database owns contacts, tasks, local drafts, submissions, job state, and link snapshots. Message caches are rebuildable. SMTP acceptance does not prove final recipient delivery.
 
+The implemented submission boundary commits an encrypted immutable snapshot and outbound job together. The implemented worker boundary claims jobs and per-account leases in short transactions, then releases database locks before feature handlers perform network work. SMTP transport and API/controller wiring remain separate modules.
+
 ## Critical invariants
 
 - Persistent remote identity: account + folder + UIDVALIDITY + UID.

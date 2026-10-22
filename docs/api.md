@@ -32,3 +32,7 @@ Return 202 with a submission ID, queued status, deadline, and request ID after d
 Errors: 400 malformed JSON; 401 invalid/revoked key; 403 unauthorized sender; 409 idempotency conflict; 413 too large; 415 unsupported content type; 422 invalid fields; 429 rate limited with Retry-After; 503 cannot durably accept. Return stable error codes and request IDs without raw provider errors or message contents.
 
 Initial configurable limits: 30 requests per minute per key and 100 accepted recipients per hour per account, subject to provider limits. Keep CORS disabled by default. Write docs/openapi.yaml when implementing this contract; that placeholder is intentionally empty.
+
+## Submission-service integration status
+
+The durable submission service now provides `createInCurrentTransaction()` and post-commit confirmation so the future API layer can atomically persist its own scoped idempotency record, one submission, and one outbound job. It does not store API idempotency keys and no route/controller exists yet. `SubmissionResult` contains no recipients, Bcc, body, or external status URL. Keep `docs/openapi.yaml` empty until the real authenticated endpoint is implemented and verified.

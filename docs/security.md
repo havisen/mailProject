@@ -27,3 +27,9 @@ Do not automatically append API authentication emails to Sent by default. A prov
 - `SmtpConnectionTester` exposes only fixed safe error categories through a transport adapter contract and never sends message DATA.
 
 These controls have not been runtime-tested on this machine. The real SMTP adapter must preserve certificate verification and must not log provider responses containing sensitive details. See `docs/accounts.md` and `docs/handovers/05-smtp-sending-accounts.md`.
+
+## Implemented in outgoing persistence
+
+`QueuedContentCipher` uses authenticated Sodium encryption with per-submission/per-field context and separately configured content keys. Immutable snapshots include envelope Bcc but database rows and durable results do not expose plaintext recipients or bodies. Recipient addresses are individually encrypted. Submission validation rejects header newlines/NUL, unapproved From identities, excessive recipients/content, API attachments, remote URLs, and arbitrary paths. Only future owned `blob_` references are syntactically accepted for internal panel use; blob storage is not implemented.
+
+`detailForAuthenticatedUi()` returns decrypted private content and must only be wired behind shared administrator authentication. No controller/route exists, so CSRF and authorization are not yet verified. Do not log its return value. Database backups contain ciphertext but remain sensitive; losing content keys prevents recovery, while leaking them with a backup reveals queued content.

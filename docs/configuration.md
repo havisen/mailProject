@@ -41,3 +41,7 @@ Per-account limits are stored in `mail_accounts`: `max_recipients`, `max_hourly_
 ## Job worker configuration
 
 `config/queue.php` defines `run_budget_seconds` (40), `lease_seconds` (30), `minimum_start_seconds` (5), `recovery_limit` (25), and priorities for the independent `outbound`, `sync`, and `maintenance` queues. CLI database names are `MAILPANEL_DB_DSN`, `MAILPANEL_DB_USER`, and `MAILPANEL_DB_PASSWORD`. Values are deployment secrets and must be injected outside `public/` and version control. See `docs/jobs.md`; feature handlers must use remaining-budget-aware network timeouts.
+
+## Submission configuration
+
+Dependency wiring must provide `security.content_keys` (key ID to base64-encoded 32-byte key), `security.active_content_key_id`, `mail.message_id_domain`, `mail.submission_default_deadline_seconds` (300), and `mail.submission_maximum_deadline_seconds` (86400). No values or loader are committed yet. Content keys are distinct configuration from SMTP credential keys, remain outside the database/document root, and must be backed up securely. Account rows provide `max_recipients` and `max_outbound_bytes`.
