@@ -11,7 +11,7 @@ next contributor, who must follow the same rule.
 
 ## Current assignment
 
-This is a planning update, not an implementation. The sender contributor owns the shared platform and outgoing mail. DeepSeek owns basic contacts. Receiving, IMAP, replies, and tasks remain deferred. No contributor should modify the old one-way sender.
+The ownership contract below remains active. The platform-independent SMTP account core from sender package S3 is now present, but S0–S2 and all integration/acceptance work are still missing. The sender contributor owns the shared platform and outgoing mail. DeepSeek owns basic contacts; no contact package is implemented. Receiving, IMAP, replies, and tasks remain deferred. No contributor should modify the old one-way sender.
 
 Read this document, AGENTS.md, handover.md, and your workstream plan before starting. The current detailed plans are docs/sender-plan.md and docs/contacts-deepseek.md. They narrow the next delivery slices of ROADMAP.md without removing its later features.
 

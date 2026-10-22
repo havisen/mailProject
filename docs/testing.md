@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Testing Introduction
 
-Test files are empty placeholders. No application tests have run. Add focused tests as real behavior is implemented rather than tests that merely assert the existence of placeholders.
+Most test files are empty placeholders. `tests/Unit/run-unit.php` now contains 40 dependency-free checks for the SMTP account core, but it has not run on the current machine because PHP is unavailable. Add focused tests as real behavior is implemented rather than tests that merely assert the existence of placeholders.
 
 ## Critical scenarios
 

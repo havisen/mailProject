@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Database Introduction
 
-No database schema is implemented. Use explicit versioned migrations, InnoDB, utf8mb4, prepared statements, and transactions for related local writes.
+Migration 002 now defines the proposed SMTP-only `mail_accounts` table, but it has not been applied or tested against MySQL/MariaDB. All other schema areas remain unimplemented. Use explicit versioned migrations, InnoDB, utf8mb4, prepared statements, and transactions for related local writes.
 
 ## Planned record groups
 
@@ -23,4 +23,4 @@ queued -> sending -> accepted, failed, or uncertain; queued may also become expi
 
 ## Active workstream split
 
-See docs/workstreams.md for migration ownership. The combined empty 005 placeholder stays unused; contacts are isolated in migration 010. No migration is implemented or applied. The sender slice additionally uses partially_accepted for mixed recipient outcomes and records per-recipient status; no automatically repeated full submission may include an already accepted recipient.
+See docs/workstreams.md for migration ownership. Migration 002 contains the SMTP account schema but has not been applied. The combined empty 005 placeholder stays unused; contacts are isolated in migration 010. The sender slice additionally uses `partially_accepted` for mixed recipient outcomes and records per-recipient status; no automatically repeated full submission may include an already accepted recipient.

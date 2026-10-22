@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Lightweight Mail Panel
 
-Project starter for a private cPanel-hosted mail panel. This archive contains documentation, empty implementation placeholders, and a minimal public index page. It is not a working mail application and must not be deployed as a secured service yet.
+Project starter for a private cPanel-hosted mail panel. It contains documentation, mostly empty implementation placeholders, a minimal public index page, and an isolated SMTP sending-account core. It is not a working mail application and must not be deployed as a secured service yet.
 
 ## Agreed purpose
 
@@ -31,7 +31,7 @@ IMAP receives and synchronizes messages; SMTP sends them. Calling applications g
 
 ## Starter status
 
-All non-Markdown files except public/index.php are intentionally empty, including composer.json, the environment example, routing, tests, and server configuration. No dependencies are installed. There is no login, API, database schema, worker, or mail connection yet. Empty configuration files are placeholders, not valid deployment configuration.
+Most implementation files remain intentionally empty. The exceptions are the SMTP account cipher, endpoint policy, migration, repository, service, connection-test contract, and temporary module test runner described in `docs/accounts.md`. No dependencies are installed. There is no login, API, migration runner, worker, usable panel, or real mail connection yet. Empty configuration files are placeholders, not valid deployment configuration.
 
 Do not run Composer until its manifest is implemented. Configure the future web document root to public/ only; the project root and storage must stay private. Do not upload credentials into any public directory.
 

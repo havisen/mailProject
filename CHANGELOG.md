@@ -9,6 +9,12 @@ next contributor, who must follow the same rule.
 
 # Changelog
 
+## SMTP account core — partial sender package S3
+
+Integrated the usable result from the supplied DeepSeek transcript into the project. Added versioned Sodium credential encryption, account/field context binding, SMTP endpoint allow-list and special-address blocking, migration 002, prepared account persistence, account lifecycle validation, and a transport-independent SMTP connection tester. Added a 40-check dependency-free test runner plus account, security, configuration, operations, roadmap, and handover documentation.
+
+The transcript's corrupted syntax was reconstructed and its invalid secretbox AAD construction was corrected with a keyed context-derived key. Runtime verification remains unavailable because PHP and Composer are not installed on this machine. HTTP/auth/CSRF, migration-runner, PHPMailer, database, and provider integration remain incomplete.
+
 ## Workstream planning update
 
 Added a detailed sender-only plan (S0–S9), a DeepSeek contacts assignment (C1–C4), shared platform/file ownership contracts, migration reservations, and separate workstream handover notes. Clarified that SMTP delivery does not depend on IMAP, the API has only a send endpoint, and contacts integrate through the shared platform. No application code was implemented.

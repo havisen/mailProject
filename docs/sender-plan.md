@@ -19,7 +19,7 @@ For the first sender release, manual sending is a simple text/optional-HTML form
 
 ## How to execute
 
-Implement S0 through S9 in order, one reviewable package at a time. Every package starts with prerequisites, produces a working result, includes failure checks, and ends with documentation plus handover updates. Status of all packages: not_started. This document contains no implementation.
+Implement S0 through S9 in order, one reviewable package at a time. Every package starts with prerequisites, produces a working result, includes failure checks, and ends with documentation plus handover updates. Current status: S0–S2 `not_started`; the platform-independent core of S3 is implemented but blocked from integration and acceptance by S0–S2; S4–S9 `not_started`.
 
 ### S0 — Verify the sender's hosting prerequisites
 
@@ -59,6 +59,8 @@ Implement S0 through S9 in order, one reviewable package at a time. Every packag
 **Accept:** Anonymous requests fail; wrong credentials throttle; missing CSRF fails; sessions expire; password recovery works without email. DeepSeek may now verify authenticated contact routes when their module is ready.
 
 ### S3 — Configure SMTP-only sending accounts
+
+**Status:** blocked/partial. Credential encryption, endpoint policy, migration, repository, service, connection-test contract, and module tests are present. The package cannot be accepted until S0–S2 provide verified hosting, Composer/bootstrap, migrations, dependency wiring, administrator authentication, CSRF, and the panel shell.
 
 **Deliver:** Add/edit/disable accounts and independent connection tests.
 

@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-use PDO;
-
 /**
  * SMTP-only account settings. IMAP settings belong to a future additive
  * migration and must not be added to this table as part of the sender slice.
  */
-return static function (PDO $pdo): void {
+return static function (\PDO $pdo): void {
     $pdo->exec(<<<'SQL'
 CREATE TABLE IF NOT EXISTS mail_accounts (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

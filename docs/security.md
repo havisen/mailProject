@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Security Introduction
 
-This starter has no implemented security controls. Empty server configuration and middleware files must never be mistaken for protection.
+This scaffold is not a secured application. The SMTP account core now contains isolated credential-encryption and endpoint-policy controls, but authentication, sessions, CSRF, server configuration, dependency wiring, and runtime verification are still absent. Empty middleware and server files must never be mistaken for protection.
 
 ## Required controls
 
@@ -18,3 +18,12 @@ Independent administrator authentication; password hashing; secure sessions; CSR
 Reject loopback, metadata, and private endpoint destinations by default. Only an explicit operator-controlled exception may permit a known legitimate private mail endpoint. Never disable certificate validation. Never log credentials, API keys, authentication codes, reset links, or private message bodies.
 
 Do not automatically append API authentication emails to Sent by default. A provider may independently retain sent mail. Encrypt queued API content and document deletion and backup retention. Update this document with verified controls and remaining gaps as milestones progress.
+
+## Implemented in the SMTP account core
+
+- `CredentialCipher` uses Sodium secretbox with versioned key IDs and account/field context binding. Keys remain outside the database and document root. Empty credentials are rejected.
+- `EndpointPolicy` requires an exact approved host, restricts SMTP to 465/implicit TLS or 587/STARTTLS, resolves DNS, and blocks special/private destinations unless the matched endpoint has a narrow operator-controlled exception.
+- `AccountRepository` omits encrypted credentials from panel reads and uses prepared statements.
+- `SmtpConnectionTester` exposes only fixed safe error categories through a transport adapter contract and never sends message DATA.
+
+These controls have not been runtime-tested on this machine. The real SMTP adapter must preserve certificate verification and must not log provider responses containing sensitive details. See `docs/accounts.md` and `docs/handovers/05-smtp-sending-accounts.md`.

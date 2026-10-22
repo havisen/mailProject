@@ -86,11 +86,16 @@ final class EndpointPolicy
             throw new \InvalidArgumentException('SMTP host did not resolve to an address.');
         }
 
-        if (empty($matched['allow_private'])) {
-            foreach ($addresses as $address) {
-                if (self::isBlockedAddress($address)) {
-                    throw new \InvalidArgumentException('SMTP host resolves to a disallowed network address.');
-                }
+        foreach ($addresses as $address) {
+            if (filter_var($address, FILTER_VALIDATE_IP) === false) {
+                throw new \InvalidArgumentException('SMTP host returned an invalid network address.');
+            }
+
+            if (
+                self::isBlockedAddress($address)
+                && (empty($matched['allow_private']) || !self::isNarrowPrivateAddress($address))
+            ) {
+                throw new \InvalidArgumentException('SMTP host resolves to a disallowed network address.');
             }
         }
 
@@ -189,5 +194,20 @@ final class EndpointPolicy
         }
 
         return true;
+    }
+
+    private static function isNarrowPrivateAddress(string $address): bool
+    {
+        $privateRanges = str_contains($address, ':')
+            ? ['fc00::/7']
+            : ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'];
+
+        foreach ($privateRanges as $range) {
+            if (self::addressInRange($address, $range)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

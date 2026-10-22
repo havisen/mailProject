@@ -30,3 +30,11 @@ Back up database, private files, configuration, and encryption key securely. Res
 Logs: 30 days. Audit/submission metadata: 90 days. Temporary uploads: 24 hours. API content: encrypted while queued and purged within 24 hours after terminal state. Document provider-side retention separately. Do not auto-delete remote email during cleanup.
 
 Add exact installation, upgrade, rotation, cleanup, backup, restore, and rollback commands as their features are implemented.
+
+## SMTP account operational notes
+
+- Back up credential master keys separately from, but together with, the database recovery set. Losing all historical keys makes stored SMTP passwords unrecoverable.
+- To rotate keys, add a new key ID and set it active. Keep old keys available until every stored value using them is re-encrypted or removed.
+- Disabling an account must stop new submissions and leave queued work visibly paused until later queue rules resolve it.
+- A connection test may connect and authenticate but must not send message DATA. Never disable certificate verification to make a test pass.
+- Migration 002 and all provider behavior are currently unverified. Do not deploy this scaffold.

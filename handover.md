@@ -11,11 +11,15 @@ next contributor, who must follow the same rule.
 
 ## Current state
 
-Documentation and empty starter structure only. No application features have been implemented. public/index.php is a minimal static introduction page. ROADMAP.md records the implementation sequence and acceptance gates.
+Documentation and a mostly empty starter structure plus the platform-independent SMTP sending-account core. No end-to-end application feature is usable yet. `public/index.php` remains a minimal static introduction page; routing, bootstrap, authentication, templates, workers, and the send API are still placeholders.
 
 ## Latest changes
 
-Split the next work into docs/sender-plan.md (sender/platform packages S0–S9) and docs/contacts-deepseek.md (DeepSeek contacts packages C1–C4). Added docs/workstreams.md for ownership, contracts, migration reservations, and integration order, plus module-specific handovers. Updated roadmap/README/database documentation and packaged the updated starter. No application code changed; implementation placeholders remain empty.
+Integrated the usable SMTP account result from the supplied DeepSeek transcript. Added `CredentialCipher`, `EndpointPolicy`, migration 002, `AccountRepository`, `AccountService`, `SmtpConnectionTester`/`SmtpProbe`, and a dependency-free 40-check module test runner. Added `docs/accounts.md` and `docs/handovers/05-smtp-sending-accounts.md`; updated security, configuration, operations, roadmap, changelog, and sender handover documentation.
+
+The transcript was not copied literally: its Markdown export had corrupted PHP syntax, and its proposed secretbox AAD construction would have used an invalid nonce length. The integrated implementation binds account context through a keyed BLAKE2b-derived secretbox key. The supplied attachment contains one SMTP-account work result; it does not contain implementations for the planned contacts C1–C4 packages, which remain not started.
+
+Earlier planning split the work into `docs/sender-plan.md` (sender/platform S0–S9) and `docs/contacts-deepseek.md` (contacts C1–C4), with ownership and migration reservations in `docs/workstreams.md`.
 
 Repository setup began on 2026-10-23: initialized a local Git repository on `main` and added a root `.gitignore` covering environment files, Composer dependencies, test output, and private runtime storage. The GitHub remote is not yet configured because the exact owner/repository URL has not been verified.
 
@@ -23,33 +27,33 @@ The external API is strictly POST /api/v1/mail/send. No read/status, inbox, cont
 
 ## Architecture and decisions
 
-Read docs/architecture.md, docs/api.md, and ROADMAP.md. Target: cPanel, PHP 8.4, MySQL/MariaDB, one administrator, standard IMAP/SMTP providers, cron jobs, and a separate deployment from the old sender. Package compatibility and hosting capabilities remain unverified.
+Read `docs/architecture.md`, `docs/api.md`, `docs/accounts.md`, and `ROADMAP.md`. Target: cPanel, PHP 8.4, MySQL/MariaDB, one administrator, standard IMAP/SMTP providers, cron jobs, and a separate deployment from the old sender. Package compatibility and hosting capabilities remain unverified. The S3 core exists only as isolated code; S0–S2 are still required before integration.
 
 ## Environment and configuration
 
-No runtime or hosting environment has been configured. config files and .env.example are empty. No secrets are present. See docs/configuration.md for the intended categories and docs/operations.md for setup responsibilities.
+No runtime or hosting environment has been configured. Config files and `.env.example` remain empty. No secrets are present. New documented names, without values: `security.credential_keys`, `security.active_key_id`, `mail.approved_endpoints`, `mail.connect_timeout_seconds`, and `mail.operation_timeout_seconds`.
 
 ## Database
 
-No schema, migrations, or production database exists in this starter. Migration files are empty placeholders. Do not treat their names as executed migrations.
+No schema has been applied and no production database exists. Migration `002_create_accounts.php` now defines the SMTP-only `mail_accounts` table but has not been executed. Other reserved migration placeholders remain empty. Do not treat filenames as executed migrations.
 
 ## Verification
 
-Original starter and updated work-split packaging were checked for file inventory, required documentation, placeholder emptiness, handover comments, and ZIP integrity. Workstream documentation links and strict send-only API boundary were reviewed. No application, dependency, provider, database, security, or hosting tests have run.
+The SMTP integration was reviewed against the transcript and project contracts. `tests/Unit/run-unit.php` contains 40 checks covering cipher behavior, endpoint restrictions, account-service behavior, and safe SMTP result classification. PHP and Composer are not installed or available on `PATH` on this Windows machine, so PHP lint and the test runner were not executed. No database, HTTP, provider, hosting, or accessibility checks have run.
 
 Repository preparation checks: reviewed hidden and large files, scanned tracked content for common secret assignments, staged the complete tree, and ran `git diff --cached --check`. No credential values or oversized files were identified. Remote connectivity and push remain unverified.
 
 ## Known issues and limitations
 
-The scaffold is deliberately nonfunctional. composer.json is empty and must be written before Composer can be used. .htaccess and other configuration files provide no protection yet. The index page does not prove PHP or mail connectivity. Backup and recovery behavior remains unimplemented.
+The scaffold is deliberately nonfunctional. `composer.json`, bootstrap, routes, middleware, account controller/templates, and `.htaccess` are still empty. There is no migration runner or dependency container. The real PHPMailer `SmtpProbe` adapter is missing. Migration 002, repository SQL, runtime crypto, DNS policy, real-provider TLS/authentication, and account HTTP/CSRF flows are unverified. Backup and recovery behavior remains unimplemented.
 
 The GitHub remote URL is still required. GitHub CLI is unavailable and the accessible browser session is signed out, so the private repository cannot be identified reliably by name alone.
 
 ## Next step
 
-Configure `origin` using the exact GitHub repository URL and push `main`. Then begin S0 in docs/sender-plan.md, checking PHP web/CLI, required extensions, private storage, database grants, one-minute cron, TLS and SMTP 465/587. Then implement S1/S2 and publish the shared platform contract. IMAP feasibility remains future receiving work and does not block the sender.
+Configure `origin` using the exact GitHub repository URL and push `main` when that URL is available. Complete S0 by checking PHP web/CLI, required extensions, private storage, database grants, one-minute cron, certificate trust, and SMTP 465/587. Then implement S1/S2 (Composer/bootstrap, configuration, migration runner, tests, administrator sessions, CSRF, and panel shell). After that, apply migration 002 and wire the S3 account core into a controller, protected routes, templates, navigation, dependency container, and a PHPMailer probe. Run the 40 module checks and disposable MySQL/MariaDB integration tests before claiming S3 accepted.
 
-DeepSeek: read docs/contacts-deepseek.md and docs/workstreams.md; begin C1/C2 using isolated contact files and migration 010. Authenticated HTTP verification waits for S1/S2. Do not edit sender or shared platform files. Every contributor updates root handover.md and their own workstream handover; the integrator merges both factual updates.
+Contacts contributor: no C1–C4 implementation was present in the supplied attachment. Read `docs/contacts-deepseek.md` and `docs/workstreams.md`; begin C1/C2 in isolated contact files and migration 010. Authenticated HTTP verification waits for S1/S2. Do not edit sender/shared platform files. Every contributor updates root `handover.md` and their workstream handover; the integrator merges both factual updates.
 
 ## Required instruction for the next contributor
 

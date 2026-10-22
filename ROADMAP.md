@@ -17,7 +17,7 @@ This roadmap governs the whole project and is implemented piece by piece. No mil
 
 ## Active work split
 
-The next release slice is sender-only mail plus an independently developed contacts module. Read docs/workstreams.md for ownership, migration reservations, integration contracts and merge rules. Sender packages S0–S9 are detailed in docs/sender-plan.md; DeepSeek contacts packages C1–C4 are in docs/contacts-deepseek.md. All are not_started.
+The next release slice is sender-only mail plus an independently developed contacts module. Read docs/workstreams.md for ownership, migration reservations, integration contracts and merge rules. Sender packages S0–S9 are detailed in docs/sender-plan.md; DeepSeek contacts packages C1–C4 are in docs/contacts-deepseek.md. S0–S2 and S4–S9 remain `not_started`; the platform-independent S3 core is present but blocked from acceptance by its unmet dependencies. Contact packages remain `not_started`.
 
 SMTP feasibility does not wait for IMAP feasibility. SMTP accounts may be configured without IMAP. The sender slice defers manual attachments/drafts, replies, inbox and Sent-folder APPEND to the full-mail milestones below. Its partially_accepted state records mixed SMTP recipient results and never triggers a whole-message resend. Contacts do not implement task or received-message links yet. These slice-specific plans govern current execution while the milestones below remain the whole-project backlog.
 
@@ -67,7 +67,7 @@ Status: not_started. Dependencies: 1.
 
 ### Milestone 3 — Mail account setup
 
-Status: not_started. Dependencies: 2.
+Status: blocked. Dependencies: 2. The platform-independent SMTP account core is implemented, but milestones 0–2, HTTP/panel integration, migration execution, and real-provider verification are missing.
 
 **Work:** Implement create/edit/disable/remove, separate SMTP and IMAP credentials, authenticated encryption, approved endpoints, sender identities, and Sent-folder mode. Validate network destinations, TLS, ports, and narrow operator-controlled private-host exceptions. Diagnose IMAP and SMTP separately; explicit test email only.
 

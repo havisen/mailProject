@@ -11,11 +11,11 @@ next contributor, who must follow the same rule.
 
 ## State
 
-Planning only. All sender implementation files are still empty. Read docs/sender-plan.md and docs/workstreams.md.
+The platform-independent core of sender package S3 is implemented: credential encryption, endpoint policy, account migration/repository/service, SMTP probe contract, and a 40-check temporary test runner. It is blocked from acceptance because S0–S2 are still absent. Most sender implementation files remain empty.
 
 ## Next step
 
-Start S0: verify target hosting and SMTP independently of IMAP. Then build S1 shared platform and publish the contract to the contacts contributor. No real hosting or SMTP test has run.
+Start S0: verify target hosting and SMTP independently of IMAP. Then build S1 shared platform and S2 administrator security before wiring the S3 core into HTTP routes/templates. Apply migration 002 only through the future migration runner. No real hosting, database, PHP runtime, or SMTP test has run.
 
 ## Required updates
 

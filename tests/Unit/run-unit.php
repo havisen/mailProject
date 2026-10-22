@@ -194,6 +194,7 @@ test('private endpoint is blocked by default', function (): void {
 test('explicit private endpoint exception is accepted', function (): void {
     $policy = new EndpointPolicy([['host' => 'mail.example.com', 'allow_private' => true]]);
     same('starttls', $policy->validate('mail.example.com', 587, fn (): array => ['10.0.0.1'])['tls']);
+    throws(InvalidArgumentException::class, fn () => $policy->validate('mail.example.com', 587, fn (): array => ['169.254.169.254']));
 });
 test('unapproved endpoint is rejected', function (): void {
     $policy = new EndpointPolicy([['host' => 'mail.example.com']]);

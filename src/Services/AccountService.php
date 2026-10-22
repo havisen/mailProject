@@ -63,9 +63,11 @@ final class AccountService
 
     public function disable(string $publicId, string $reason = 'Disabled by administrator'): void
     {
-        if (!$this->accounts->disable($publicId, $reason)) {
+        if ($this->accounts->findByPublicId($publicId) === null) {
             throw new \InvalidArgumentException('Account not found.');
         }
+
+        $this->accounts->disable($publicId, $reason);
     }
 
     public function delete(string $publicId): void
