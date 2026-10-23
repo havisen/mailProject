@@ -61,4 +61,6 @@ The foundation and administrator boundary are present but unverified and depende
 
 Install PHP 8.4/Composer and required extensions, resolve/review dependencies into `composer.lock`, provision a disposable MySQL/MariaDB schema, and run preflight plus migration status/up/status. Run foundation tests and all three authentication checks, then verify login, expiry, password change/recovery, cookies, and CSRF through real HTTPS; record exact outputs and fix failures before marking Milestone 2 complete. Only afterward integrate future feature routes behind the shared middleware, register the worker handler/API route, apply 002/003/007/008 to a disposable database, and run the remaining concurrency/SMTP/OpenAPI checks. Keep outbound and the public API disabled until those checks pass.
 
+For delegated implementation, `DEEPSEEK-V4.1-FLASH-OUTBOUND-INTEGRATION.md` is a concise repository-local prompt covering authenticated account management, durable submissions/jobs, SMTP worker registration, the sole send API, and manual Send/Outbox in sequential gates. It requires prerequisite checks and must not be used to claim blocked runtime/provider evidence.
+
 **Read and update handover.md before handing over, and require the next contributor to do the same.**
