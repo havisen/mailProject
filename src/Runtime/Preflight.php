@@ -25,6 +25,13 @@ final readonly class Preflight
             $results[] = new PreflightResult('Extension ' . $extension, $loaded, $loaded ? 'loaded' : 'missing');
         }
 
+        $argon2id = defined('PASSWORD_ARGON2ID');
+        $results[] = new PreflightResult(
+            'Argon2id password hashing',
+            $argon2id,
+            $argon2id ? 'available' : 'PASSWORD_ARGON2ID is unavailable',
+        );
+
         foreach (['storage', 'logs'] as $name) {
             $path = $this->config->string('paths.' . $name);
             $usable = is_dir($path) && is_readable($path) && is_writable($path);

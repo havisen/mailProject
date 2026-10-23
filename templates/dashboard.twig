@@ -1,0 +1,11 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+  <h1>Mail panel</h1>
+  <p>Signed in as {{ administrator.email }}.</p>
+  <p>Sending accounts, Outbox, and other panel features remain unavailable until their integration milestones pass.</p>
+  <form method="post" action="/logout">
+    <input type="hidden" name="_csrf" value="{{ logout_csrf }}">
+    <button type="submit">Sign out</button>
+  </form>
+{% endblock %}

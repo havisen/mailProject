@@ -9,7 +9,15 @@ next contributor, who must follow the same rule.
 
 # Database Introduction
 
-Migration 002 defines the SMTP-only `mail_accounts` table, but it has not been applied or tested against MySQL/MariaDB. The CLI migration runner now applies ordered nonempty PHP migration files and records filename, SHA-256 checksum, and UTC application time in `schema_migrations`. It serializes execution with a MySQL advisory lock, rejects modified or missing applied files, and records a migration only after its callable returns. Use explicit versioned migrations, InnoDB, utf8mb4, prepared statements, and transactions for related local writes.
+Migration 001 now defines administrator authentication tables and migration 002 defines the SMTP-only `mail_accounts` table, but neither has been applied or tested against MySQL/MariaDB. The CLI migration runner applies ordered nonempty PHP migration files and records filename, SHA-256 checksum, and UTC application time in `schema_migrations`. It serializes execution with a MySQL advisory lock, rejects modified or missing applied files, and records a migration only after its callable returns. Use explicit versioned migrations, InnoDB, utf8mb4, prepared statements, and transactions for related local writes.
+
+## Administrator authentication schema
+
+Unapplied migration `001_create_admin_and_jobs.php` creates `administrators`, `administrator_sessions`, and `administrator_login_throttles`. Despite its reserved filename, it creates no jobs; job ownership remains migration 007. A `singleton_key` unique/check constraint permits one administrator. Emails are normalized to lowercase before insert; password values are Argon2id hashes. `security_version` invalidates all sessions after password change/recovery.
+
+Session rows store only SHA-256 token hashes plus a random CSRF secret, security version, HMAC IP/user-agent hashes, last seen, idle/absolute expiry, and revocation time. Throttle rows are keyed by HMAC scope hashes and contain only window/count/block timestamps. Short row-lock transactions update throttle state; no transaction spans password hashing or a network call.
+
+Unapplied migration `006_create_audit_events.php` creates safe authentication audit metadata with indexes by time, administrator, and event type. It has no free-form payload column. Both migrations use InnoDB/utf8mb4 and have no automatic down migration. Once applied, never rewrite them; use an additive migration. Session/throttle/audit cleanup is not implemented, so retention enforcement remains an operations task.
 
 Run `php bin/console.php migrate status`, then `php bin/console.php migrate up`, then status again. Commands require the documented environment and Composer dependencies. Reserved zero-byte files are skipped until implemented. MySQL/MariaDB DDL can auto-commit: a failed migration may leave partial schema even though the ledger correctly remains unmodified. Inspect/repair the disposable or restored schema before retrying; never edit an applied file or conceal a checksum difference. There are no automated down migrations.
 

@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Lightweight Mail Panel
 
-Project starter for a private cPanel-hosted mail panel. It contains documentation, mostly empty implementation placeholders, a minimal public index page, and an isolated SMTP sending-account core. It is not a working mail application and must not be deployed as a secured service yet.
+In-progress private cPanel-hosted mail panel. It contains an unverified foundation and administrator authentication boundary plus isolated outgoing-mail modules, alongside empty future-feature placeholders. It is not an integrated or runtime-verified mail application and must not be deployed as a secured service yet.
 
 ## Agreed purpose
 
@@ -29,20 +29,20 @@ IMAP receives and synchronizes messages; SMTP sends them. Calling applications g
 4. Sender contributor: use docs/sender-plan.md. DeepSeek contacts contributor: use docs/contacts-deepseek.md.
 5. Begin with the relevant feasibility checks; implement one package at a time and update handover.md before every handover.
 
-## Starter status
+## Current status
 
-Most implementation files remain intentionally empty. The exceptions are the SMTP account cipher, endpoint policy, migration, repository, service, connection-test contract, and temporary module test runner described in `docs/accounts.md`. No dependencies are installed. There is no login, API, migration runner, worker, usable panel, or real mail connection yet. Empty configuration files are placeholders, not valid deployment configuration.
+The Composer manifest, validated configuration, PDO/bootstrap, migration runner, database job core, administrator login/session/CSRF module, SMTP account/submission/delivery cores, and send-API modules are present. Only the administrator login/dashboard/password/logout web routes are registered. Dependencies are not installed or locked, no migration has run, and PHP/MySQL/HTTPS/SMTP behavior has not been verified on this host. Read `handover.md` and module docs for exact blockers; placeholder files are not completed features.
 
-Do not run Composer until its manifest is implemented. Configure the future web document root to public/ only; the project root and storage must stay private. Do not upload credentials into any public directory.
+Configure the web document root to `public/` only; the project root and storage stay private. Never upload credentials into a public directory. Resolve and review Composer dependencies on a development host, commit the lock, use a disposable database for the documented tests, and do not enable outbound/API behavior until its acceptance checks pass.
 
 ## File organization
 
-- public/: future HTTP entrypoint and static assets.
+- public/: HTTP entrypoint and static assets; it must be the only web document root.
 - bootstrap/, config/, routes/: application startup and configuration.
 - src/: controllers, middleware, services, mail adapters, repositories, and workers.
 - templates/: future server-rendered views.
 - database/migrations/: explicit versioned migrations.
-- bin/: future maintenance and worker commands.
+- bin/: migration, preflight, administrator, and bounded worker commands.
 - storage/: private logs, cache, queue content, uploads, and backups.
 - tests/: unit, integration, and non-sensitive mail fixtures.
 - docs/: architecture, API, operations, security, database, configuration, testing, and interface notes.

@@ -43,6 +43,8 @@ final class ConfigLoader
         $credentialActiveKey = self::activeKey($environment, 'MAILPANEL_CREDENTIAL_ACTIVE_KEY_ID', $credentialKeyset);
         $contentActiveKey = self::activeKey($environment, 'MAILPANEL_CONTENT_ACTIVE_KEY_ID', $contentKeyset);
         $fingerprintKey = self::decodedSecret($environment, 'MAILPANEL_API_FINGERPRINT_KEY', 32);
+        $csrfKey = self::decodedSecret($environment, 'MAILPANEL_AUTH_CSRF_KEY', 32);
+        $throttleKey = self::decodedSecret($environment, 'MAILPANEL_AUTH_THROTTLE_KEY', 32);
         $messageDomain = self::required($environment, 'MAILPANEL_MESSAGE_ID_DOMAIN');
         if (filter_var($messageDomain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) {
             throw new ConfigException('MAILPANEL_MESSAGE_ID_DOMAIN must be a valid hostname.');
@@ -51,12 +53,28 @@ final class ConfigLoader
         $queue = require $basePath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'queue.php';
         $mail = require $basePath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'mail.php';
         $api = require $basePath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'api.php';
+        $app = require $basePath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'app.php';
+        $security = require $basePath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'security.php';
+        $sessionIdleSeconds = self::boundedInt($environment, 'MAILPANEL_SESSION_IDLE_SECONDS', (int) $app['session_idle_seconds'], 300, 86400);
+        $sessionAbsoluteSeconds = self::boundedInt($environment, 'MAILPANEL_SESSION_ABSOLUTE_SECONDS', (int) $app['session_absolute_seconds'], 900, 604800);
+        if ($sessionAbsoluteSeconds <= $sessionIdleSeconds) {
+            throw new ConfigException('MAILPANEL_SESSION_ABSOLUTE_SECONDS must exceed the idle timeout.');
+        }
+        $sessionCookieName = self::cookieName($environment, 'MAILPANEL_SESSION_COOKIE_NAME', (string) $app['session_cookie_name']);
+        $loginCsrfCookieName = self::cookieName($environment, 'MAILPANEL_LOGIN_CSRF_COOKIE_NAME', (string) $app['login_csrf_cookie_name']);
+        if ($sessionCookieName === $loginCsrfCookieName) {
+            throw new ConfigException('Session and login CSRF cookie names must differ.');
+        }
 
         return new Config([
             'app' => [
                 'environment' => $appEnvironment,
                 'debug' => $debug,
                 'base_path' => $basePath,
+                'session_idle_seconds' => $sessionIdleSeconds,
+                'session_absolute_seconds' => $sessionAbsoluteSeconds,
+                'session_cookie_name' => $sessionCookieName,
+                'login_csrf_cookie_name' => $loginCsrfCookieName,
             ],
             'database' => [
                 'dsn' => self::required($environment, 'MAILPANEL_DB_DSN'),
@@ -75,6 +93,14 @@ final class ConfigLoader
                 'content_keyset' => $contentKeyset,
                 'content_active_key_id' => $contentActiveKey,
                 'api_fingerprint_key' => $fingerprintKey,
+                'auth_csrf_key' => $csrfKey,
+                'auth_throttle_key' => $throttleKey,
+                'csrf_ttl_seconds' => self::boundedInt($environment, 'MAILPANEL_CSRF_TTL_SECONDS', (int) $security['csrf_ttl_seconds'], 60, 3600),
+                'login_max_failures' => self::boundedInt($environment, 'MAILPANEL_LOGIN_MAX_FAILURES', (int) $security['login_max_failures'], 2, 100),
+                'login_window_seconds' => self::boundedInt($environment, 'MAILPANEL_LOGIN_WINDOW_SECONDS', (int) $security['login_window_seconds'], 60, 86400),
+                'login_block_seconds' => self::boundedInt($environment, 'MAILPANEL_LOGIN_BLOCK_SECONDS', (int) $security['login_block_seconds'], 60, 86400),
+                'minimum_password_characters' => (int) $security['minimum_password_characters'],
+                'maximum_password_bytes' => (int) $security['maximum_password_bytes'],
             ],
             'mail' => array_merge($mail, [
                 'message_id_domain' => strtolower($messageDomain),
@@ -189,6 +215,17 @@ final class ConfigLoader
         }
 
         return $active;
+    }
+
+    /** @param array<string, mixed> $environment */
+    private static function cookieName(array $environment, string $name, string $default): string
+    {
+        $value = self::optional($environment, $name, $default);
+        if (preg_match('/^[A-Za-z][A-Za-z0-9_-]{2,63}$/', $value) !== 1) {
+            throw new ConfigException(sprintf('%s is not a valid cookie name.', $name));
+        }
+
+        return $value;
     }
 
     /** @param array<string, mixed> $environment */

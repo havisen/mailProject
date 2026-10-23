@@ -22,7 +22,7 @@ final class SecretRedactor
     private function sanitize(array $values): array
     {
         foreach ($values as $key => $value) {
-            if (preg_match('/(?:authorization|password|secret|token|keyset|fingerprint|body|content|dsn)/i', (string) $key) === 1) {
+            if (preg_match('/(?:authorization|password|secret|token|keyset|(?:^|_)key(?:_|$)|fingerprint|body|content|dsn)/i', (string) $key) === 1) {
                 $values[$key] = '[redacted]';
                 continue;
             }

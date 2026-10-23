@@ -9,8 +9,14 @@ if (PHP_SAPI !== 'cli') {
 
 $command = $argv[1] ?? 'help';
 if ($command === 'help' || in_array($command, ['--help', '-h'], true)) {
-    fwrite(STDOUT, "Commands:\n  migrate [status|up]\n  preflight\n");
+    fwrite(STDOUT, "Commands:\n  migrate [status|up]\n  preflight\n  admin:create --email=ADDRESS [--password-stdin]\n  admin:reset-password --email=ADDRESS [--password-stdin]\n");
     exit(0);
+}
+
+if (in_array($command, ['admin:create', 'admin:reset-password'], true)) {
+    $argv[1] = $command === 'admin:create' ? 'create' : 'reset-password';
+    $_SERVER['argv'] = $argv;
+    require __DIR__ . '/admin.php';
 }
 
 if ($command === 'migrate') {

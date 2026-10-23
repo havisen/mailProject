@@ -19,7 +19,7 @@ For the first sender release, manual sending is a simple text/optional-HTML form
 
 ## How to execute
 
-Implement S0 through S9 in order, one reviewable package at a time. Every package starts with prerequisites, produces a working result, includes failure checks, and ends with documentation plus handover updates. Current status: S0–S2 `not_started`; the platform-independent core of S3 is implemented but blocked from integration and acceptance by S0–S2; S4–S9 `not_started`.
+Implement S0 through S9 in order, one reviewable package at a time. Every package starts with prerequisites, produces a working result, includes failure checks, and ends with documentation plus handover updates. Current status: S0/S1 foundation code is present but unverified; S2 authentication code is implemented but blocked on those dependencies and PHP/database/HTTPS evidence; the platform-independent cores of S3–S6 are present but remain blocked from integration and acceptance; S7–S9 are not started.
 
 ### S0 — Verify the sender's hosting prerequisites
 
@@ -48,6 +48,8 @@ Implement S0 through S9 in order, one reviewable package at a time. Every packag
 **Accept:** Fresh install and repeat migrations work; invalid config fails clearly; private files are inaccessible; basic web and CLI execution pass. Record the exact platform contract in handover.md so DeepSeek can integrate safely.
 
 ### S2 — Implement the independent administrator session
+
+**Status:** blocked/implemented. Login/logout/password change, CLI recovery, versioned hash-only database sessions, Secure/HttpOnly/SameSite cookies, action-bound CSRF, database throttling, protected base routes, safe audit events, migrations, and tests are present. Composer/runtime/database/HTTPS verification has not run, so this package is not accepted.
 
 **Deliver:** Login, logout, password change, CLI recovery, and protected navigation.
 

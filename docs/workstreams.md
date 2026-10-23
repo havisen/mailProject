@@ -11,7 +11,7 @@ next contributor, who must follow the same rule.
 
 ## Current assignment
 
-The ownership contract below remains active. The platform-independent SMTP account core from sender package S3 is now present, but S0–S2 and all integration/acceptance work are still missing. The sender contributor owns the shared platform and outgoing mail. DeepSeek owns basic contacts; no contact package is implemented. Receiving, IMAP, replies, and tasks remain deferred. No contributor should modify the old one-way sender.
+The ownership contract below remains active. The foundation and S2 administrator boundary are now implemented but unverified; the platform-independent S3–S6 sender cores are present, while integration/acceptance still depends on PHP/Composer/database/HTTPS/SMTP evidence. The sender contributor owns the shared platform and outgoing mail. DeepSeek owns basic contacts; no contact package is implemented. Receiving, IMAP, replies, and tasks remain deferred. No contributor should modify the old one-way sender.
 
 Read this document, AGENTS.md, handover.md, and your workstream plan before starting. The current detailed plans are docs/sender-plan.md and docs/contacts-deepseek.md. They narrow the next delivery slices of ROADMAP.md without removing its later features.
 
@@ -39,7 +39,7 @@ Read this document, AGENTS.md, handover.md, and your workstream plan before star
 - Dates/timestamps persist in UTC. The panel has one administrator and no tenant IDs or organization concepts.
 - Tests use the platform's disposable MySQL/MariaDB database. A SQLite-only result is not acceptance evidence.
 
-These are planned contracts, not existing implementation. DeepSeek can implement contact repository/service logic and module tests against the contract immediately. Full authenticated HTTP verification waits for S1/S2; do not invent a second platform to bypass that dependency. If the actual framework API requires a contract correction, the integrating contributor documents it before changing either module.
+The authentication/PDO/Twig/migration portions of this contract now have an implementation, but they are not accepted until the documented runtime tests pass. The contact route-group and shared validation-exception integrations remain planned. DeepSeek can implement contact-local repository/service logic and module tests against the contract; authenticated HTTP verification must use the real shared middleware after S1/S2 evidence, never a second platform. If the actual framework API requires a contract correction, the integrating contributor documents it before changing either module.
 
 ## Database ownership
 

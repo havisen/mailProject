@@ -7,9 +7,11 @@ private message contents. Every handover must repeat this requirement for the
 next contributor, who must follow the same rule.
 -->
 
-# Starter File Inventory
+# Original starter file inventory
 
-All implementation files are empty except public/index.php. Markdown files contain introductory documentation and the roadmap. Empty .gitkeep files preserve private storage/fixture directories. No vendor files, secrets, production data, or dependency lockfile are included. Generate and commit a lockfile only after implementing the Composer manifest.
+This list records the original scaffold and is not a current implementation inventory. The repository now includes foundation, authentication, and isolated sender-module code plus additional module docs/tests; use `rg --files` or the Git tree for the authoritative current list. Empty placeholders still represent deferred work. No vendor files, secrets, production data, or dependency lockfile are included. Generate and commit a reviewed lockfile only on a PHP/Composer development host, then run the documented checks.
+
+Notable additions since the scaffold include `bin/admin.php`, `bootstrap/web.php`, `src/Auth/`, authentication repositories/security/middleware, `templates/dashboard.twig`, `templates/settings/password.twig`, `tests/Unit/run-auth.php`, `tests/Integration/run-auth.php`, `tests/Integration/run-auth-http.php`, and `docs/authentication.md`. Migration 003 is now `003_create_submissions.php`; sender migrations 007/008 and their corresponding modules/docs also exist. See `handover.md` for current status rather than inferring completion from a filename.
 
 ```text
 .env.example

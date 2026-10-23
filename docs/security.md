@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Security Introduction
 
-This scaffold is not a secured application. The foundation now validates startup secrets and private paths, creates private redacted JSON logs, uses native PDO prepares/strict SQL mode, returns internal request IDs, and fails HTTP startup without details. The SMTP account core contains isolated credential-encryption and endpoint-policy controls. Authentication, sessions, CSRF, feature dependency/route wiring, dependency locking, and runtime verification are still absent; the existing empty middleware placeholders must never be mistaken for protection.
+This scaffold is not deployable as a verified secured application. The foundation validates startup secrets and private paths, creates private redacted JSON logs, uses native PDO prepares/strict SQL mode, returns internal request IDs, and fails HTTP startup without details. Milestone 2 now implements the administrator login/session/CSRF boundary and protected authentication routes, but PHP/database/HTTPS acceptance and dependency locking are still absent. Other feature routes remain unwired and must not be treated as protected until explicitly registered behind the middleware.
 
 The request-ID middleware intentionally ignores caller-supplied IDs. Logging redacts keys whose names imply authorization, passwords, secrets, tokens, fingerprints, bodies, or content and removes Bearer values from strings. Code must still avoid logging request payloads, private messages, recipient lists, credentials, API/idempotency keys, or raw SMTP/IMAP transcripts. Only `public/` may be web-accessible, and migration/preflight operations are CLI-only.
 
@@ -20,6 +20,17 @@ Independent administrator authentication; password hashing; secure sessions; CSR
 Reject loopback, metadata, and private endpoint destinations by default. Only an explicit operator-controlled exception may permit a known legitimate private mail endpoint. Never disable certificate validation. Never log credentials, API keys, authentication codes, reset links, or private message bodies.
 
 Do not automatically append API authentication emails to Sent by default. A provider may independently retain sent mail. Encrypt queued API content and document deletion and backup retention. Update this document with verified controls and remaining gaps as milestones progress.
+
+## Implemented administrator boundary
+
+- One administrator is provisioned or recovered only from CLI. Passwords are valid UTF-8, at least 14 characters and at most 1,024 bytes, and use PHP Argon2id.
+- Login errors are generic and unknown users take a password-verification path. Database throttles use separate HMAC scopes for normalized email and the server-observed IP; forwarded-address headers are deliberately ignored.
+- A successful login replaces any supplied old session with a random 256-bit token. The database stores only SHA-256 token hashes. Session cookies are always Secure, HttpOnly, SameSite=Strict, path `/`; idle and absolute expiry plus administrator security version are checked per protected request.
+- Login has a separate HttpOnly challenge cookie and action-bound signed token. Authenticated mutations require action/session/expiry-bound CSRF. Password change/recovery increments security version and revokes all sessions; browser change receives exactly one replacement session.
+- Authentication/private HTML is `no-store`. Global headers provide restrictive CSP, frame denial, no-referrer, no-sniff, permissions restrictions, and HSTS. The dashboard is intentionally minimal.
+- Audit events use a fixed allow-list and safe identifiers only. Redaction now treats generic `_key` configuration fields as secrets. Passwords, raw tokens, private request bodies, and authorization values are never audit data.
+
+Threats still requiring operational evidence include Secure-cookie behavior through the real HTTPS proxy, concurrent throttle races, browser tests, session/throttle cleanup, dependency supply-chain review, backup/restore, and web-server denial of non-public files. Do not disable Secure cookies, CSRF, TLS validation, or throttling to bypass a failed setup.
 
 ## Implemented in the SMTP account core
 

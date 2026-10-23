@@ -11,6 +11,7 @@ next contributor, who must follow the same rule.
 
 ## Unreleased
 
+- Added Milestone 2 administrator access: single-admin CLI provisioning/recovery, Argon2id passwords, hash-only versioned database sessions, idle/absolute expiry, Secure/HttpOnly/SameSite cookies, login and authenticated CSRF, database email/IP throttling, password change/logout, protected Slim routes, safe audits/security headers, migrations, tests, and documentation. Runtime/database/HTTPS verification remains blocked on this host.
 - Added the shared foundation runtime: strict environment validation, MySQL PDO setup, private redacted JSON logs, random request IDs, fail-closed Slim bootstrap, checksum/lock migration runner, CLI migration and preflight commands, and focused configuration/migration tests. Dependencies are declared but not installed or locked; runtime/database verification remains blocked on this host.
 - Added Assignment 06 database jobs: atomic leased claims, per-account serialization, handler-owned expired recovery, resumable checkpoints, worker heartbeats, independent queues, a bounded CLI, tests, and operations documentation. Migration 007 is not applied or database-verified.
 - Added Assignment 07 outgoing persistence: encrypted immutable snapshots and recipients, stable IDs/Message-IDs, transactional enqueue, browser operation deduplication, safe cancellation/claim transitions, recipient outcomes, conservative retry/uncertain recovery, tests, and documentation. Migration 003 is not applied or database-verified.

@@ -1,0 +1,17 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+  <h1>Administrator sign in</h1>
+  <form method="post" action="/login" autocomplete="on">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <label>
+      Email
+      <input type="email" name="email" value="{{ email }}" maxlength="254" autocomplete="username" required autofocus>
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" maxlength="1024" autocomplete="current-password" required>
+    </label>
+    <button type="submit">Sign in</button>
+  </form>
+{% endblock %}

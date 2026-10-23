@@ -17,7 +17,7 @@ This roadmap governs the whole project and is implemented piece by piece. No mil
 
 ## Active work split
 
-The next release slice is sender-only mail plus an independently developed contacts module. Read docs/workstreams.md for ownership, migration reservations, integration contracts and merge rules. Sender packages S0–S9 are detailed in docs/sender-plan.md; DeepSeek contacts packages C1–C4 are in docs/contacts-deepseek.md. S0 now has an unverified foundation runtime; S1–S2 remain `not_started`. The platform-independent account, job, submission, SMTP, API-key, and send-API cores are present but blocked from acceptance by missing dependency/runtime/database evidence and integration. Contact packages remain `not_started`.
+The next release slice is sender-only mail plus an independently developed contacts module. Read docs/workstreams.md for ownership, migration reservations, integration contracts and merge rules. Sender packages S0–S9 are detailed in docs/sender-plan.md; DeepSeek contacts packages C1–C4 are in docs/contacts-deepseek.md. S0 now has an unverified foundation runtime; S1 is in progress and S2 is implemented but blocked from acceptance by missing runtime/database/HTTPS evidence. The platform-independent account, job, submission, SMTP, API-key, and send-API cores are present but blocked from acceptance by missing dependency/runtime/database evidence and integration. Contact packages remain `not_started`.
 
 SMTP feasibility does not wait for IMAP feasibility. SMTP accounts may be configured without IMAP. The sender slice defers manual attachments/drafts, replies, inbox and Sent-folder APPEND to the full-mail milestones below. Its partially_accepted state records mixed SMTP recipient results and never triggers a whole-message resend. Contacts do not implement task or received-message links yet. These slice-specific plans govern current execution while the milestones below remain the whole-project backlog.
 
@@ -57,7 +57,7 @@ Status: in_progress. Dependencies: 0. Configuration, PDO, private logging, reque
 
 ### Milestone 2 — Independent administrator access
 
-Status: not_started. Dependencies: 1.
+Status: blocked. Dependencies: 1. The authentication/session/CSRF/throttling/password/protected-route implementation, migrations, CLI and tests are present, but Composer dependencies are not installed/locked and no PHP, disposable database, or HTTPS runtime verification has run.
 
 **Work:** Create the administrator through CLI. Implement password hashing, login/logout/password change, session regeneration and expiry, Secure/HttpOnly/SameSite cookies, CSRF, throttling, safe audit events, and CLI recovery.
 

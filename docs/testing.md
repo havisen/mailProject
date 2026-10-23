@@ -27,6 +27,9 @@ Use disposable mailboxes and databases. Run real provider tests against cPanel a
 ## Implemented module checks
 
 - `php tests/Foundation/run-foundation.php`: strict configuration, key-format compatibility, defaults, redaction, missing values, production debug rejection, weak keys, and public-storage rejection.
+- `php tests/Unit/run-auth.php`: password length/encoding controls, Argon2id verification, action/session/expiry-bound CSRF, malformed token rejection, and secure cookie attributes.
+- `php tests/Integration/run-auth.php`: destructive disposable-schema checks for one administrator, hash-only storage, email/IP throttling, session authentication, idle/absolute expiry, password-change invalidation, CLI-style recovery, and safe audit events.
+- `php tests/Integration/run-auth-http.php`: actual Slim route/middleware checks for anonymous redirect, login challenge, successful login, protected dashboard, password-change CSRF/session replacement, logout CSRF rejection, logout, and revoked-session denial.
 - `php tests/Integration/run-migrations.php`: disposable MySQL/MariaDB overlap locking, apply-once behavior, checksum drift, and failure-not-recorded behavior. It requires `MAILPANEL_TEST_ALLOW_RESET=1` and the documented `MAILPANEL_TEST_DB_*` values and must never target production.
 - `php tests/Unit/run-jobs.php`: handler execution, checkpoint/timeout budget, explicit sync resume, conservative SMTP recovery, and missing-handler failure.
 - `php tests/Unit/run-submissions.php`: immutable normalization, recipient deduplication, header injection, sender authorization, attachment boundaries, deadlines, Bcc-safe response, and contextual encryption.
@@ -38,7 +41,7 @@ Use disposable mailboxes and databases. Run real provider tests against cPanel a
 
 For the API database check, set the same disposable variables shown in `docs/submissions.md`, then run exactly `php tests/Integration/run-send-api.php`. The script drops module tables and must never target production.
 
-None ran on the current Windows machine because PHP, a database client/server, and container runtime are unavailable. These scripts are test doubles/database acceptance only; they are not real SMTP-provider evidence. Neighboring `tests/Unit/run-unit.php` must also run when the PHP environment becomes available.
+None ran on the current Windows machine because PHP, a database client/server, and container runtime are unavailable. The authentication integration scripts require `MAILPANEL_TEST_ALLOW_RESET=1` plus `MAILPANEL_TEST_DB_DSN`, `MAILPANEL_TEST_DB_USER`, and `MAILPANEL_TEST_DB_PASSWORD`; they drop authentication tables and must target only a disposable schema. Exact examples are in `docs/authentication.md`. These scripts are unit/database/local-HTTP acceptance only; they are not real HTTPS proxy or SMTP-provider evidence. Neighboring foundation and `tests/Unit/run-unit.php` checks must also run when the PHP environment becomes available.
 
 Assignment 08 still requires a controlled verified-TLS SMTP server for real PHPMailer adapter evidence: RCPT accepted/permanent/transient mixes, DATA accepted/permanent/transient, disconnect during final DATA, timeout, crash, and database outage after acceptance. Use only synthetic fixture addresses/content.
 

@@ -74,7 +74,7 @@ final readonly class Config
     private function redact(array $values): array
     {
         foreach ($values as $key => $value) {
-            if (preg_match('/(?:password|secret|keyset|fingerprint_key|token|authorization|dsn)/i', (string) $key) === 1) {
+            if (preg_match('/(?:password|secret|keyset|(?:^|_)key(?:_|$)|token|authorization|dsn)/i', (string) $key) === 1) {
                 $values[$key] = '[redacted]';
                 continue;
             }

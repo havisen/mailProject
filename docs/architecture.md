@@ -17,7 +17,9 @@ Target PHP 8.4, MySQL 8.0+ or MariaDB 10.6+, InnoDB, and utf8mb4. The interface 
 
 ## Components and flow
 
-Browser requests now enter the fail-closed Slim bootstrap at `public/index.php`, receive an internal random request ID, and will later pass through authentication/middleware, controllers, services, and repositories. No feature routes are registered yet. Twig is configured with HTML autoescaping and strict variables; compiled-template caching remains disabled until private cache operations are verified. Configuration, private JSON logs, PDO setup, and the CLI-only checksum migration runner live outside `public/`. The send-only external API will call the same submission service as the panel. Cron workers process durable outbound submissions and IMAP synchronization separately so historical backfill cannot block transactional sending.
+Browser requests enter the fail-closed Slim bootstrap at `public/index.php`, receive an internal random request ID, pass global security headers, and may enter the Milestone 2 authentication routes. Protected routes use `AuthMiddleware`; browser mutations additionally use action-specific `CsrfMiddleware`. `AuthController -> AuthService -> prepared repositories` separates HTTP, policy, and persistence. Session-token and throttle identifiers are one-way values in the database. Twig uses HTML autoescaping and strict variables; compiled-template caching remains disabled until private cache operations are verified. Configuration, private JSON logs, PDO setup, CLI administrator recovery, and the checksum migration runner live outside `public/`.
+
+Only login, dashboard, password-change, and logout routes are registered. The send-only API and mail feature routes remain isolated until integration. Cron workers process durable outbound submissions and IMAP synchronization separately so historical backfill cannot block transactional sending.
 
 The mail server owns received messages, folders, and remote flags. The database owns contacts, tasks, local drafts, submissions, job state, and link snapshots. Message caches are rebuildable. SMTP acceptance does not prove final recipient delivery.
 
@@ -37,5 +39,8 @@ The implemented API path is `ApiKeyMiddleware -> SendMailController -> SendReque
 - Preserve contact/task context when a message leaves the cache.
 - Explicit migrations only; no schema creation in ordinary page requests.
 - Only public/ is web-accessible; configuration, dependencies, and private files stay outside it.
+- One administrator is enforced by schema; no public signup or email recovery exists.
+- Protected browser mutations require both a current versioned session and action-bound CSRF.
+- Password change/recovery revokes every old session; stored session tokens are never reversible.
 
 Expand this document as each module is implemented and record decisions in handover.md.

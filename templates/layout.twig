@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+</head>
+<body>
+  <header>
+    <a href="/">Mail panel</a>
+    {% if administrator is defined %}
+      <nav aria-label="Administrator">
+        <a href="/settings/password">Change password</a>
+      </nav>
+    {% endif %}
+  </header>
+  <main>
+    {% if notice is defined and notice %}<p role="status">{{ notice }}</p>{% endif %}
+    {% if error is defined and error %}<p role="alert">{{ error }}</p>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
