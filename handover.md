@@ -63,4 +63,6 @@ Install PHP 8.4/Composer and required extensions, resolve/review dependencies in
 
 For delegated implementation, `DEEPSEEK-V4.1-FLASH-OUTBOUND-INTEGRATION.md` is a concise repository-local prompt covering authenticated account management, durable submissions/jobs, SMTP worker registration, the sole send API, and manual Send/Outbox in sequential gates. It requires prerequisite checks and must not be used to claim blocked runtime/provider evidence.
 
+The ordered prompt pack in `prompts/deepseek-v4.1-flash/` covers prerequisite verification and steps 9–17. Each run loads one small task plus shared rules and stops after one milestone/sub-package, minimizing context and preserving dependency order. Its index also points to the existing outbound integration prompt for steps 4–8.
+
 **Read and update handover.md before handing over, and require the next contributor to do the same.**
