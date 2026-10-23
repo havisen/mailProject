@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\AccountRepository;
+use App\Repositories\JobRepository;
 use App\Security\CredentialCipher;
 use App\Security\EndpointPolicy;
 
-final class AccountService
+final class AccountService implements SendingAccountProvider
 {
     public function __construct(
         private AccountRepository $accounts,
         private CredentialCipher $cipher,
         private EndpointPolicy $endpointPolicy,
+        private ?JobRepository $jobs = null,
     ) {
     }
 
@@ -90,6 +92,33 @@ final class AccountService
         }
 
         return $this->cipher->decrypt((string) $account['password_enc'], $context);
+    }
+
+    /** @return array<string, mixed>|null */
+    public function configurationForWorker(string $accountId): ?array
+    {
+        $account = $this->accounts->findWithSecretByPublicId($accountId);
+        if ($account === null || empty($account['enabled'])) {
+            return null;
+        }
+        $context = (string) ($account['password_aad'] ?? '');
+        if ($context === '') {
+            $context = CredentialCipher::contextFor($accountId, 'password');
+        }
+        $account['password'] = $this->cipher->decrypt((string) $account['password_enc'], $context);
+        unset($account['password_enc'], $account['password_aad']);
+        return $account;
+    }
+
+    public function recordAuthenticationFailure(string $accountId): void
+    {
+        if ($this->jobs === null) {
+            return;
+        }
+        $since = gmdate('Y-m-d H:i:s', time() - 900);
+        if ($this->jobs->countRecentAccountFailures($accountId, 'authentication', $since) + 1 >= 3) {
+            $this->accounts->disable($accountId, 'Paused after repeated SMTP authentication failures.');
+        }
     }
 
     /** @return array<string, mixed> */

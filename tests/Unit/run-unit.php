@@ -12,6 +12,7 @@ use App\Services\AccountService;
 require __DIR__ . '/../../src/Security/CredentialCipher.php';
 require __DIR__ . '/../../src/Security/EndpointPolicy.php';
 require __DIR__ . '/../../src/Repositories/AccountRepository.php';
+require __DIR__ . '/../../src/Services/SendingAccountProvider.php';
 require __DIR__ . '/../../src/Services/AccountService.php';
 require __DIR__ . '/../../src/Mail/SmtpConnectionTester.php';
 

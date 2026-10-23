@@ -24,6 +24,8 @@ Panel double-submit protection uses a 16–128 character browser operation ID an
 
 Transport integration uses `finishAttempt()` for `accepted`, `partially_accepted`, `failed`, or `uncertain` and records recipient outcomes separately. `requeueDefinitelyNotAccepted()` is allowed only when the handler asserts SMTP acceptance was impossible and the deadline remains open. Terminal states never requeue. An expired `sending` attempt passed to `recoverExpiredSend()` becomes `uncertain`; an expired job whose submission is still `queued` can safely retry because SMTP was never claimed.
 
+Assignment 08 now supplies that transport integration. `recordAndRequeueDefinitelyNotAccepted()` persists every temporary attempt before rescheduling, and accepted-but-unpersisted results leave the lease for uncertain recovery. New submissions enqueue with a four-attempt ceiling matching the documented 1/2/4-minute policy.
+
 ## Validation and privacy
 
 - Sender comes from the enabled account. A requested From must exactly match its approved identity.

@@ -27,4 +27,10 @@ final class JobResult
     {
         return new self('retry', $failureCategory, $scheduledAt);
     }
+
+    /** Leave the lease in place so expired-lease recovery resolves ambiguity. */
+    public static function abandon(string $failureCategory = 'uncertain_outcome'): self
+    {
+        return new self('abandon', $failureCategory);
+    }
 }

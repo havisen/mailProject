@@ -23,6 +23,8 @@ The mail server owns received messages, folders, and remote flags. The database 
 
 The implemented submission boundary commits an encrypted immutable snapshot and outbound job together. The implemented worker boundary claims jobs and per-account leases in short transactions, then releases database locks before feature handlers perform network work. SMTP transport and API/controller wiring remain separate modules.
 
+The SMTP module now instruments RCPT and final DATA separately. A library exception is not itself proof of non-delivery. Conclusive DATA acceptance, mixed RCPT outcomes, and ambiguity are persisted as accepted, partially accepted, or uncertain; only definite pre-acceptance temporary failures can return to queued.
+
 ## Critical invariants
 
 - Persistent remote identity: account + folder + UIDVALIDITY + UID.

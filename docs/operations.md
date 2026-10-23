@@ -37,6 +37,8 @@ After applying migration 007, run the bounded CLI with an absolute PHP 8.4 path.
 
 Submission recovery must distinguish `queued` from `sending`. An expired leased job for a `sending` submission becomes `uncertain` and requires operator/provider reconciliation; never update it back to queued manually. A deadline is checked only before an attempt begins. Content-key loss prevents decryption and must produce a visible failure without starting SMTP. Purge terminal private content only through the future bounded maintenance handler and only after backup/retention policy is confirmed.
 
+SMTP operations additionally require `composer install`, PHPMailer 7.1, OpenSSL CA trust, and registered `smtp.send` handler wiring. Repeated authentication failures pause an account at three failures in 15 minutes when `AccountService` receives `JobRepository`. A final-DATA disconnect, stale in-flight lease, or database failure after acceptance is `uncertain`; inspect provider logs and never broadly requeue it.
+
 ## SMTP account operational notes
 
 - Back up credential master keys separately from, but together with, the database recovery set. Losing all historical keys makes stored SMTP passwords unrecoverable.

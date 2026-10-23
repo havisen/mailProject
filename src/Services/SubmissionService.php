@@ -13,10 +13,11 @@ use App\Submissions\PendingSubmission;
 use App\Submissions\SubmissionRequest;
 use App\Submissions\SubmissionResult;
 use App\Submissions\SubmissionValidator;
+use App\Submissions\SubmissionDeliveryStore;
 use PDO;
 use PDOException;
 
-final class SubmissionService
+final class SubmissionService implements SubmissionDeliveryStore
 {
     public function __construct(
         private PDO $pdo,
@@ -131,7 +132,7 @@ final class SubmissionService
             'dedupe_key' => $submissionId,
             'priority' => 10,
             'scheduled_at' => $now,
-            'max_attempts' => 3,
+            'max_attempts' => 4,
         ]);
 
         return new PendingSubmission(
@@ -227,6 +228,13 @@ final class SubmissionService
                 throw new \RuntimeException('Submission claim transition was lost.');
             }
             $this->pdo->commit();
+            $snapshot['_submission'] = [
+                'id' => $submissionId,
+                'message_id' => (string) $row['message_id'],
+                'account_id' => (string) $row['account_reference'],
+                'attempt' => (int) $row['attempts'] + 1,
+                'deadline_at' => (string) $row['deadline_at'],
+            ];
             return $snapshot;
         } catch (\Throwable $throwable) {
             $this->rollback();
@@ -319,6 +327,47 @@ final class SubmissionService
         }
     }
 
+    public function recordAndRequeueDefinitelyNotAccepted(
+        string $submissionId,
+        string $failureCategory,
+        array $outcomes
+    ): bool {
+        $failureCategory = $this->safeCategory($failureCategory);
+        $this->beginOwnedTransaction();
+        try {
+            $row = $this->submissions->lockByPublicId($submissionId);
+            if ($row === null || $row['state'] !== 'sending') {
+                throw new \DomainException('Submission is not in a sendable attempt.');
+            }
+            $stored = $this->normalizeOutcomes($outcomes, (int) $row['id']);
+            $this->submissions->recordRecipientOutcomes(
+                (int) $row['id'],
+                (int) $row['attempts'],
+                $stored,
+                self::now()
+            );
+            $changed = $this->submissions->requeueSending($submissionId, $failureCategory, self::now());
+            $this->pdo->commit();
+            return $changed;
+        } catch (\Throwable $throwable) {
+            $this->rollback();
+            throw $throwable;
+        }
+    }
+
+    public function failQueuedWithoutAttempt(string $submissionId, string $failureCategory): bool
+    {
+        $this->beginOwnedTransaction();
+        try {
+            $changed = $this->submissions->failQueued($submissionId, $this->safeCategory($failureCategory), self::now());
+            $this->pdo->commit();
+            return $changed;
+        } catch (\Throwable $throwable) {
+            $this->rollback();
+            throw $throwable;
+        }
+    }
+
     /** Decision used by the future SMTP handler's expired-lease callback. */
     public function recoverExpiredSend(string $submissionId): JobResult
     {
@@ -377,6 +426,40 @@ final class SubmissionService
         if ($this->pdo->inTransaction()) {
             $this->pdo->rollBack();
         }
+    }
+
+    /**
+     * @param list<array{ordinal:int,outcome:string,failure_category:?string}> $outcomes
+     * @return list<array{ordinal:int,outcome:string,failure_category:?string}>
+     */
+    private function normalizeOutcomes(array $outcomes, int $submissionDatabaseId): array
+    {
+        $seen = [];
+        $normalized = [];
+        foreach ($outcomes as $outcome) {
+            $ordinal = (int) $outcome['ordinal'];
+            if ($ordinal < 0 || isset($seen[$ordinal])) {
+                throw new \InvalidArgumentException('Recipient outcome ordinals must be unique and nonnegative.');
+            }
+            $seen[$ordinal] = true;
+            $normalized[] = [
+                'ordinal' => $ordinal,
+                'outcome' => $outcome['outcome'],
+                'failure_category' => $outcome['failure_category'] === null
+                    ? null
+                    : $this->safeCategory($outcome['failure_category']),
+            ];
+        }
+        $count = $this->submissions->recipientCount($submissionDatabaseId);
+        if (count($normalized) !== $count) {
+            throw new \InvalidArgumentException('Every immutable recipient needs exactly one attempt outcome.');
+        }
+        for ($ordinal = 0; $ordinal < $count; $ordinal++) {
+            if (!isset($seen[$ordinal])) {
+                throw new \InvalidArgumentException('Every immutable recipient needs exactly one attempt outcome.');
+            }
+        }
+        return $normalized;
     }
 
     private function safeCategory(string $category): string

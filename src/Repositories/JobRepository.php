@@ -20,6 +20,9 @@ class JobRepository
         'permanent',
         'protocol',
         'storage',
+        'tls',
+        'quota',
+        'sender_auth',
         'timeout',
         'uncertain_outcome',
     ];
@@ -399,6 +402,21 @@ class JobRepository
         $statement->execute([':public_id' => $publicId]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
         return $row === false ? null : $this->decodeJsonFields($row);
+    }
+
+    public function countRecentAccountFailures(string $accountReference, string $category, string $since): int
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT COUNT(*) FROM jobs
+              WHERE account_reference = :account_reference AND status = \'failed\'
+                AND failure_category = :category AND updated_at >= :since'
+        );
+        $statement->execute([
+            ':account_reference' => $accountReference,
+            ':category' => $this->failureCategory($category),
+            ':since' => $since,
+        ]);
+        return (int) $statement->fetchColumn();
     }
 
     private function finish(

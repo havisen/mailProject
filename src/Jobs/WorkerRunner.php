@@ -137,6 +137,7 @@ final class WorkerRunner
                 $result->failureCategory ?? 'internal',
                 $result->scheduledAt ?? gmdate('Y-m-d H:i:s.u', time() + 60)
             ),
+            'abandon' => true,
             default => false,
         };
         if (!$ok) {

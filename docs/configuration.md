@@ -45,3 +45,5 @@ Per-account limits are stored in `mail_accounts`: `max_recipients`, `max_hourly_
 ## Submission configuration
 
 Dependency wiring must provide `security.content_keys` (key ID to base64-encoded 32-byte key), `security.active_content_key_id`, `mail.message_id_domain`, `mail.submission_default_deadline_seconds` (300), and `mail.submission_maximum_deadline_seconds` (86400). No values or loader are committed yet. Content keys are distinct configuration from SMTP credential keys, remain outside the database/document root, and must be backed up securely. Account rows provide `max_recipients` and `max_outbound_bytes`.
+
+`config/mail.php` now defines delivery defaults: connection timeout 10 seconds, operation timeout 20 seconds, retry delays 60/120/240 seconds, maximum four attempts, and account pause after three authentication failures within 900 seconds. Worker time remaining always lowers network timeouts. TLS verification has no disable switch.

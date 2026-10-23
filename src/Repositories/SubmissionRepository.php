@@ -168,6 +168,11 @@ class SubmissionRepository
         return $this->terminalTransition($publicId, 'queued', 'canceled', null, $now);
     }
 
+    public function failQueued(string $publicId, string $category, string $now): bool
+    {
+        return $this->terminalTransition($publicId, 'queued', 'failed', $category, $now);
+    }
+
     public function finishSending(string $publicId, string $state, ?string $category, string $now): bool
     {
         if (!in_array($state, ['accepted', 'partially_accepted', 'failed', 'uncertain'], true)) {
