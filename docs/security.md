@@ -9,7 +9,9 @@ next contributor, who must follow the same rule.
 
 # Security Introduction
 
-This scaffold is not a secured application. The SMTP account core now contains isolated credential-encryption and endpoint-policy controls, but authentication, sessions, CSRF, server configuration, dependency wiring, and runtime verification are still absent. Empty middleware and server files must never be mistaken for protection.
+This scaffold is not a secured application. The foundation now validates startup secrets and private paths, creates private redacted JSON logs, uses native PDO prepares/strict SQL mode, returns internal request IDs, and fails HTTP startup without details. The SMTP account core contains isolated credential-encryption and endpoint-policy controls. Authentication, sessions, CSRF, feature dependency/route wiring, dependency locking, and runtime verification are still absent; the existing empty middleware placeholders must never be mistaken for protection.
+
+The request-ID middleware intentionally ignores caller-supplied IDs. Logging redacts keys whose names imply authorization, passwords, secrets, tokens, fingerprints, bodies, or content and removes Bearer values from strings. Code must still avoid logging request payloads, private messages, recipient lists, credentials, API/idempotency keys, or raw SMTP/IMAP transcripts. Only `public/` may be web-accessible, and migration/preflight operations are CLI-only.
 
 ## Required controls
 

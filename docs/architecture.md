@@ -17,7 +17,7 @@ Target PHP 8.4, MySQL 8.0+ or MariaDB 10.6+, InnoDB, and utf8mb4. The interface 
 
 ## Components and flow
 
-Browser requests enter public/index.php, then authentication/middleware, controllers, services, and repositories. The send-only external API calls the same submission service as the panel. Cron workers process durable outbound submissions and IMAP synchronization separately so historical backfill cannot block transactional sending.
+Browser requests now enter the fail-closed Slim bootstrap at `public/index.php`, receive an internal random request ID, and will later pass through authentication/middleware, controllers, services, and repositories. No feature routes are registered yet. Twig is configured with HTML autoescaping and strict variables; compiled-template caching remains disabled until private cache operations are verified. Configuration, private JSON logs, PDO setup, and the CLI-only checksum migration runner live outside `public/`. The send-only external API will call the same submission service as the panel. Cron workers process durable outbound submissions and IMAP synchronization separately so historical backfill cannot block transactional sending.
 
 The mail server owns received messages, folders, and remote flags. The database owns contacts, tasks, local drafts, submissions, job state, and link snapshots. Message caches are rebuildable. SMTP acceptance does not prove final recipient delivery.
 

@@ -9,7 +9,7 @@ next contributor, who must follow the same rule.
 
 # Testing Introduction
 
-Most test files are empty placeholders. `tests/Unit/run-unit.php` now contains 40 dependency-free checks for the SMTP account core, but it has not run on the current machine because PHP is unavailable. Add focused tests as real behavior is implemented rather than tests that merely assert the existence of placeholders.
+The repository contains dependency-free and disposable-database runners, but none has run on the current machine because PHP is unavailable. Add focused tests as real behavior is implemented rather than tests that merely assert the existence of placeholders.
 
 ## Critical scenarios
 
@@ -26,6 +26,8 @@ Use disposable mailboxes and databases. Run real provider tests against cPanel a
 
 ## Implemented module checks
 
+- `php tests/Foundation/run-foundation.php`: strict configuration, key-format compatibility, defaults, redaction, missing values, production debug rejection, weak keys, and public-storage rejection.
+- `php tests/Integration/run-migrations.php`: disposable MySQL/MariaDB overlap locking, apply-once behavior, checksum drift, and failure-not-recorded behavior. It requires `MAILPANEL_TEST_ALLOW_RESET=1` and the documented `MAILPANEL_TEST_DB_*` values and must never target production.
 - `php tests/Unit/run-jobs.php`: handler execution, checkpoint/timeout budget, explicit sync resume, conservative SMTP recovery, and missing-handler failure.
 - `php tests/Unit/run-submissions.php`: immutable normalization, recipient deduplication, header injection, sender authorization, attachment boundaries, deadlines, Bcc-safe response, and contextual encryption.
 - `php tests/Integration/run-jobs-and-submissions.php`: opt-in destructive reset of a disposable MySQL/MariaDB schema followed by atomic commit/rollback, browser-operation idempotency/conflict, cancellation race, interrupted-send uncertainty, and account-lease overlap checks. Required variables and exact command are in `docs/submissions.md`.

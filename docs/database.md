@@ -9,7 +9,9 @@ next contributor, who must follow the same rule.
 
 # Database Introduction
 
-Migration 002 now defines the proposed SMTP-only `mail_accounts` table, but it has not been applied or tested against MySQL/MariaDB. All other schema areas remain unimplemented. Use explicit versioned migrations, InnoDB, utf8mb4, prepared statements, and transactions for related local writes.
+Migration 002 defines the SMTP-only `mail_accounts` table, but it has not been applied or tested against MySQL/MariaDB. The CLI migration runner now applies ordered nonempty PHP migration files and records filename, SHA-256 checksum, and UTC application time in `schema_migrations`. It serializes execution with a MySQL advisory lock, rejects modified or missing applied files, and records a migration only after its callable returns. Use explicit versioned migrations, InnoDB, utf8mb4, prepared statements, and transactions for related local writes.
+
+Run `php bin/console.php migrate status`, then `php bin/console.php migrate up`, then status again. Commands require the documented environment and Composer dependencies. Reserved zero-byte files are skipped until implemented. MySQL/MariaDB DDL can auto-commit: a failed migration may leave partial schema even though the ledger correctly remains unmodified. Inspect/repair the disposable or restored schema before retrying; never edit an applied file or conceal a checksum difference. There are no automated down migrations.
 
 ## Planned record groups
 

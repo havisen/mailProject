@@ -19,6 +19,10 @@ Confirm web and CLI PHP 8.4, compatible Composer dependencies, PDO MySQL, Sodium
 
 Dedicated subdomain, database credentials, session cookie, API keys, and encryption key. Set the document root to public/ only. Keep all private storage and configuration outside it. Use HTTPS, production-safe errors, explicit migrations, absolute cron paths, and pinned dependencies. Do not reuse the old panel's secret values.
 
+The foundation now provides `php bin/console.php preflight`, `php bin/console.php migrate status`, and `php bin/console.php migrate up`. Preflight checks PHP 8.4, required extensions, private writable paths, OpenSSL trust, and a database query; exit 3 identifies a database check failure, 78 invalid configuration, and 1 another failed prerequisite. The migration command returns 64 for misuse and 2 when status finds a changed/missing applied file. Run these with the same PHP binary and environment as cron. No web migration endpoint exists.
+
+Dependencies are declared but no lock file was generated on the current host. On a development host, run and review `composer update --with-all-dependencies`, `composer validate --strict`, and all tests, then commit the lock. Production must use `composer install --no-dev --classmap-authoritative` from that reviewed lock. The public entry point currently has no feature routes; it fails with a generic 503 on startup errors and otherwise returns 404 for unmatched requests.
+
 ## Worker and recovery requirements
 
 Use database jobs with leases, bounded execution around 40 seconds, per-account locks, heartbeat monitoring, and resumable batches. Prioritize outbound delivery independently of IMAP backfill. Alert visibly if the worker heartbeat is older than five minutes. Record actual cron commands only after implemented.

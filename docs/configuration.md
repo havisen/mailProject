@@ -9,7 +9,15 @@ next contributor, who must follow the same rule.
 
 # Configuration Introduction
 
-Configuration files are empty placeholders. Introduce validated settings during implementation, document their exact names here, and never include real values in documentation.
+`ConfigLoader` now validates the foundation process environment before web or CLI startup. Nonsecret defaults remain in `config/*.php`; secrets are injected by the host outside `public/` and version control. No `.env` file loader is included. Never include real values in documentation.
+
+## Foundation environment names
+
+Required: `APP_ENV`, `MAILPANEL_DB_DSN`, `MAILPANEL_DB_USER`, `MAILPANEL_DB_PASSWORD`, `MAILPANEL_CREDENTIAL_KEYSET`, `MAILPANEL_CREDENTIAL_ACTIVE_KEY_ID`, `MAILPANEL_CONTENT_KEYSET`, `MAILPANEL_CONTENT_ACTIVE_KEY_ID`, `MAILPANEL_API_FINGERPRINT_KEY`, and `MAILPANEL_MESSAGE_ID_DOMAIN`. `APP_ENV` is one of `production`, `staging`, `development`, or `test`; `APP_DEBUG=true` is rejected in production.
+
+Optional: `APP_DEBUG` (default false), `PRIVATE_STORAGE_PATH` (default `<project>/storage`), `LOG_PATH` (default `<storage>/logs`), `MAILPANEL_TLS_CA_BUNDLE`, `MAILPANEL_API_MAXIMUM_BODY_BYTES` (262144), `MAILPANEL_API_REQUESTS_PER_MINUTE` (30), `MAILPANEL_API_RECIPIENTS_PER_HOUR` (100), and `MAILPANEL_IDEMPOTENCY_RETENTION_SECONDS` (604800). Paths must be absolute, existing directories; private paths and traversals into `public/` are rejected. Create them with restrictive hosting permissions before startup.
+
+Both keyset values are JSON objects mapping an identifier to a base64-encoded 32-byte random value. Active IDs must exist in their respective keyset. `MAILPANEL_API_FINGERPRINT_KEY` is separate base64 material representing at least 32 random bytes. The loader preserves cipher keyset encoding for `CredentialCipher`/`QueuedContentCipher` and decodes the API fingerprint key once. Generate secrets on a trusted PHP host with `base64_encode(random_bytes(32))`; store the result in the hosting secret configuration, never in this repository or logs.
 
 ## Required categories
 
@@ -48,7 +56,7 @@ Dependency wiring must provide `security.content_keys` (key ID to base64-encoded
 
 `config/mail.php` now defines delivery defaults: connection timeout 10 seconds, operation timeout 20 seconds, retry delays 60/120/240 seconds, maximum four attempts, and account pause after three authentication failures within 900 seconds. Worker time remaining always lowers network timeouts. TLS verification has no disable switch.
 
-API keys need no shared plaintext-key configuration: each key is randomly generated and stored only as an Argon2id hash. Migration 008 stores its nonsecret prefix, label, `mail:send` scope, and allowed account mappings. Assignment 10 will add a separate server-held idempotency fingerprint secret and configurable request/recipient limits; do not reuse encryption keys for that purpose.
+API keys need no shared plaintext-key configuration: each key is randomly generated and stored only as an Argon2id hash. Migration 008 stores its nonsecret prefix, label, `mail:send` scope, and allowed account mappings. The separate server-held API fingerprint secret and request/recipient limits are now validated by the foundation loader; do not reuse encryption keys for that purpose.
 
 ## Send API configuration
 

@@ -11,6 +11,7 @@ next contributor, who must follow the same rule.
 
 ## Unreleased
 
+- Added the shared foundation runtime: strict environment validation, MySQL PDO setup, private redacted JSON logs, random request IDs, fail-closed Slim bootstrap, checksum/lock migration runner, CLI migration and preflight commands, and focused configuration/migration tests. Dependencies are declared but not installed or locked; runtime/database verification remains blocked on this host.
 - Added Assignment 06 database jobs: atomic leased claims, per-account serialization, handler-owned expired recovery, resumable checkpoints, worker heartbeats, independent queues, a bounded CLI, tests, and operations documentation. Migration 007 is not applied or database-verified.
 - Added Assignment 07 outgoing persistence: encrypted immutable snapshots and recipients, stable IDs/Message-IDs, transactional enqueue, browser operation deduplication, safe cancellation/claim transitions, recipient outcomes, conservative retry/uncertain recovery, tests, and documentation. Migration 003 is not applied or database-verified.
 - Added Assignment 08 SMTP delivery: PHPMailer 7 verified-TLS adapter, separate RCPT/DATA instrumentation, safe partial/uncertain outcomes, bounded retries, account authentication-failure pausing, controlled worker doubles, and operations documentation. Runtime/transport verification remains blocked.
