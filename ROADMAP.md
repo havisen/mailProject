@@ -33,6 +33,8 @@ Read AGENTS.md and handover.md; verify prerequisites; split the active milestone
 
 Delegated DeepSeek work should use `prompts/deepseek-v4.1-flash/RUN-ONE-AND-REPORT.md` with one target prompt. Review its evidence packet and repository diff before authorizing the next package; the packet is not acceptance evidence by itself.
 
+Use `prompts/codex/REVIEW-DEEPSEEK-WORKTREE.md` for the read-only review gate. Code approval and milestone acceptance are separate decisions; missing runtime, database, concurrency, provider, HTTPS, or deployment evidence keeps acceptance blocked even when the diff is approved.
+
 Track each milestone as not_started, in_progress, blocked, or complete. A blocked milestone must state the missing condition and resolution path. Complete means implemented, verified, failure behavior checked, operational changes documented, and handover updated. Do not mark placeholders complete.
 
 ## Milestones

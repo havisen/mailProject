@@ -67,4 +67,6 @@ The ordered prompt pack in `prompts/deepseek-v4.1-flash/` covers prerequisite ve
 
 `prompts/deepseek-v4.1-flash/RUN-ONE-AND-REPORT.md` is the monitoring wrapper for delegated runs. Give it exactly one target prompt; DeepSeek must stop after the first incomplete package and return the standardized evidence packet. Review the packet together with the working-tree diff before allowing the next package. The packet does not replace runtime, database, controlled-provider, or deployment evidence.
 
+`prompts/codex/REVIEW-DEEPSEEK-WORKTREE.md` is the read-only Codex review gate. Supply the target prompt, starting SHA, complete DeepSeek packet, and unchanged worktree. It inspects staged, unstaged, and untracked changes, reports prioritized actionable findings, and separates code approval from milestone evidence acceptance. Resolve its findings or evidence blockers before authorizing another DeepSeek package.
+
 **Read and update handover.md before handing over, and require the next contributor to do the same.**
