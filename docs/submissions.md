@@ -16,9 +16,9 @@ This is not yet a usable sending feature. Foundation/bootstrap, migrations, admi
 
 Construct `SubmissionRequest` with account, source (`panel`, `api`, or controlled `test`), To/Cc/Bcc arrays, subject, text/optional HTML, optional Reply-To/deadline, and a panel browser operation ID. `SubmissionService::create()` owns the transaction and returns `SubmissionResult` only after commit. Database, storage, encryption, disabled/missing-account, and validation failures throw without returning durable acceptance.
 
-For API-layer idempotency, the future API module opens a transaction, writes/locks its API idempotency record, calls `createInCurrentTransaction()`, and commits. That method returns `PendingSubmission`, which must never be serialized as a 202. After commit, call `confirmCommitted()`. This lets one API idempotency record, one submission, and one job commit together while leaving key scoping/conflict policy with Assignment 10.
+For API-layer idempotency, `ApiSendService` opens a transaction, checks/stores its HMAC idempotency record, consumes recipient quota, calls `createInCurrentTransaction()`, and commits. That method returns `PendingSubmission`, which is never serialized before commit; `confirmCommitted()` runs afterward. This lets one API mapping, quota update, encrypted submission, and outbound job commit together.
 
-Panel double-submit protection uses a 16–128 character browser operation ID and a unique `(account_id, source, browser_operation_id)` index. Identical canonical content returns the existing submission; changed content raises a conflict. API idempotency keys are not stored in this schema.
+Panel double-submit protection uses a 16–128 character browser operation ID and a unique `(account_id, source, browser_operation_id)` index. Identical canonical content returns the existing submission; changed content raises a conflict. API idempotency identifiers are separately HMACed in migration 008 and plaintext keys are not stored.
 
 `statusForAuthenticatedUi()` exposes safe Outbox metadata; `detailForAuthenticatedUi()` decrypts the immutable snapshot and recipient outcomes. Both are only for an administrator-authenticated controller and must never be exposed to the external API. `cancelQueued()` atomically transitions only `queued -> canceled` and cancels an unclaimed job. `claimForSending()` row-locks the submission, enforces the deadline as an attempt-start limit, decrypts before changing state, and atomically transitions `queued -> sending`. A cancellation after that point safely fails.
 
@@ -35,6 +35,7 @@ Assignment 08 now supplies that transport integration. `recordAndRequeueDefinite
 - The snapshot is encrypted with authenticated Sodium secretbox using a submission-specific context. Each recipient address also has contextual encryption. Content keys live outside the database and `public/`.
 - `Message-ID` is generated once from the stable `sub_` ID and configured domain. Caller changes after creation cannot alter stored content.
 - Safe error categories and outcome enums are stored; raw SMTP responses and message content must not enter logs or error fields.
+- API callers use structured `{email,name?}` recipients while panel callers may still use address strings. Names are preserved in the encrypted snapshot; Bcc remains envelope-only.
 
 ## Schema and state
 
@@ -52,7 +53,7 @@ Deadlines limit when an attempt may start; they are not delivery promises and do
 
 ## Installation, tests, and retention
 
-Apply migrations in order with the future migration runner: 002, 003, then 007. They have not been applied in this repository. Required PHP capabilities are PHP 8.4, PDO MySQL, JSON, and Sodium. Run local risk checks:
+Apply migrations in order with the future migration runner: 002, 003, 007, then 008 for API use. They have not been applied in this repository. Required PHP capabilities are PHP 8.4, PDO MySQL, JSON, Intl, and Sodium. Run local risk checks:
 
 ```sh
 php tests/Unit/run-submissions.php
@@ -75,4 +76,4 @@ Queued private content should be purged within 24 hours after a terminal state o
 
 ## Known limitations and next integration
 
-No migration runner, dependency wiring, controller, API route, authenticated panel view, cleanup handler, transport handler, or real-provider evidence exists. The future integration owner must instantiate the service from validated configuration, implement Assignment 08's SMTP handler using the claim/finish/recovery interfaces, and implement Assignment 10 API idempotency in its own table/transaction. Do not add a status-reading API.
+No migration runner, dependency wiring, API route, authenticated panel view, cleanup handler, or real-provider evidence exists. The SMTP handler and API controller/service are isolated implementations but must be registered by the integration owner. Do not add a status-reading API.

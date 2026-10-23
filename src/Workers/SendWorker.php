@@ -85,6 +85,7 @@ final class SendWorker implements JobHandler
             $snapshot['reply_to'] === null
                 ? null
                 : (is_array($snapshot['reply_to']) ? (string) $snapshot['reply_to']['email'] : (string) $snapshot['reply_to']),
+            is_array($snapshot['reply_to'] ?? null) ? (string) ($snapshot['reply_to']['name'] ?? '') : '',
             (string) $snapshot['subject'],
             (string) $snapshot['text'],
             isset($snapshot['html']) ? (string) $snapshot['html'] : null,

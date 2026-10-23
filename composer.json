@@ -5,6 +5,8 @@
   "require": {
     "php": "^8.4",
     "ext-json": "*",
+    "ext-intl": "*",
+    "ext-mbstring": "*",
     "ext-openssl": "*",
     "ext-pdo": "*",
     "ext-sodium": "*",

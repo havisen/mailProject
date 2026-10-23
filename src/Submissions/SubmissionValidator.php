@@ -57,16 +57,13 @@ final class SubmissionValidator
         $normalized = ['to' => [], 'cc' => [], 'bcc' => []];
         foreach (['to' => $request->to, 'cc' => $request->cc, 'bcc' => $request->bcc] as $type => $addresses) {
             foreach ($addresses as $address) {
-                if (!is_string($address)) {
-                    throw new \InvalidArgumentException('Recipient addresses must be strings.');
-                }
-                $valid = $this->email($address, $type . ' recipient');
-                $key = strtolower($valid);
+                $valid = $this->recipient($address, $type . ' recipient');
+                $key = strtolower($valid['email']);
                 if (isset($normalized['to'][$key]) || isset($normalized['cc'][$key]) || isset($normalized['bcc'][$key])) {
                     continue;
                 }
-                $normalized[$type][$key] = $valid;
-                $recipients[] = ['type' => $type, 'address' => $valid];
+                $normalized[$type][$key] = is_array($address) ? $valid : $valid['email'];
+                $recipients[] = ['type' => $type, 'address' => $valid['email']];
             }
         }
         $recipientLimit = max(1, (int) ($account['max_recipients'] ?? 10));
@@ -76,7 +73,8 @@ final class SubmissionValidator
 
         $replyTo = $request->replyTo === null ? ($account['reply_to_email'] ?? null) : $request->replyTo;
         if ($replyTo !== null && $replyTo !== '') {
-            $replyTo = $this->email((string) $replyTo, 'Reply-To');
+            $replyToValue = $this->recipient($replyTo, 'Reply-To');
+            $replyTo = is_array($replyTo) ? $replyToValue : $replyToValue['email'];
         } else {
             $replyTo = null;
         }
@@ -143,6 +141,32 @@ final class SubmissionValidator
             throw new \InvalidArgumentException('Invalid ' . $label . ' address.');
         }
         return $value;
+    }
+
+    /** @return array{email:string,name?:string} */
+    private function recipient(mixed $value, string $label): array
+    {
+        if (is_string($value)) {
+            return ['email' => $this->email($value, $label)];
+        }
+        if (!is_array($value) || !isset($value['email']) || !is_string($value['email'])) {
+            throw new \InvalidArgumentException('Invalid ' . $label . '.');
+        }
+        $recipient = ['email' => $this->email($value['email'], $label)];
+        if (isset($value['name'])) {
+            if (!is_string($value['name'])) {
+                throw new \InvalidArgumentException('Invalid ' . $label . ' name.');
+            }
+            $name = trim($value['name']);
+            $this->withoutNewlines($name, $label . ' name');
+            if ($this->length($name) > 120) {
+                throw new \InvalidArgumentException('Recipient name exceeds 120 characters.');
+            }
+            if ($name !== '') {
+                $recipient['name'] = $name;
+            }
+        }
+        return $recipient;
     }
 
     private function withoutNewlines(string $value, string $label): void

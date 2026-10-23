@@ -15,6 +15,7 @@ next contributor, who must follow the same rule.
 - Added Assignment 07 outgoing persistence: encrypted immutable snapshots and recipients, stable IDs/Message-IDs, transactional enqueue, browser operation deduplication, safe cancellation/claim transitions, recipient outcomes, conservative retry/uncertain recovery, tests, and documentation. Migration 003 is not applied or database-verified.
 - Added Assignment 08 SMTP delivery: PHPMailer 7 verified-TLS adapter, separate RCPT/DATA instrumentation, safe partial/uncertain outcomes, bounded retries, account authentication-failure pausing, controlled worker doubles, and operations documentation. Runtime/transport verification remains blocked.
 - Added Assignment 09 API keys: one-time high-entropy issuance, Argon2id hash-only persistence, `mail:send` account scopes, Bearer middleware, revocation/replacement overlap, safe audit events, settings template, coordinated migration 008, tests, and documentation. HTTP/database verification remains blocked.
+- Added Assignment 10 send-only API: strict JSON/recipient/IDNA validation, HMAC idempotency, request and recipient limits, atomic submission/job/replay persistence, safe HTTP errors, OpenAPI/examples, and focused tests. Shared route/bootstrap and runtime/database verification remain blocked.
 
 ## SMTP account core — partial sender package S3
 

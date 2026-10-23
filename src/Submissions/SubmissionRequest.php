@@ -7,9 +7,9 @@ namespace App\Submissions;
 final class SubmissionRequest
 {
     /**
-     * @param list<string> $to
-     * @param list<string> $cc
-     * @param list<string> $bcc
+     * @param list<string|array{email:string,name?:string}> $to
+     * @param list<string|array{email:string,name?:string}> $cc
+     * @param list<string|array{email:string,name?:string}> $bcc
      * @param list<string> $ownedBlobReferences
      */
     public function __construct(
@@ -21,7 +21,7 @@ final class SubmissionRequest
         public readonly string $subject,
         public readonly string $text,
         public readonly ?string $html = null,
-        public readonly ?string $replyTo = null,
+        public readonly string|array|null $replyTo = null,
         public readonly ?\DateTimeImmutable $deadline = null,
         public readonly ?string $browserOperationId = null,
         public readonly array $ownedBlobReferences = [],

@@ -39,6 +39,8 @@ Submission recovery must distinguish `queued` from `sending`. An expired leased 
 
 SMTP operations additionally require `composer install`, PHPMailer 7.1, OpenSSL CA trust, and registered `smtp.send` handler wiring. Repeated authentication failures pause an account at three failures in 15 minutes when `AccountService` receives `JobRepository`. A final-DATA disconnect, stale in-flight lease, or database failure after acceptance is `uncertain`; inspect provider logs and never broadly requeue it.
 
+Send API operation additionally requires PHP Intl, migration 008, a private fingerprint key, request-ID middleware, and exact route registration for `POST /api/v1/mail/send`. Monitor 429/503 rates and idempotency/rate-table cleanup; never log Authorization, idempotency keys, request bodies, or replay responses. Retain replay mappings seven days, including after encrypted terminal content is purged. On restore keep the API and outbound workers disabled, review key revocations and queued/in-flight work, and rotate credentials if backup exposure is suspected.
+
 ## SMTP account operational notes
 
 - Back up credential master keys separately from, but together with, the database recovery set. Losing all historical keys makes stored SMTP passwords unrecoverable.

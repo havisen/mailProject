@@ -17,7 +17,7 @@ This roadmap governs the whole project and is implemented piece by piece. No mil
 
 ## Active work split
 
-The next release slice is sender-only mail plus an independently developed contacts module. Read docs/workstreams.md for ownership, migration reservations, integration contracts and merge rules. Sender packages S0–S9 are detailed in docs/sender-plan.md; DeepSeek contacts packages C1–C4 are in docs/contacts-deepseek.md. S0–S2 and S4–S9 remain `not_started`; the platform-independent S3 core is present but blocked from acceptance by its unmet dependencies. Contact packages remain `not_started`.
+The next release slice is sender-only mail plus an independently developed contacts module. Read docs/workstreams.md for ownership, migration reservations, integration contracts and merge rules. Sender packages S0–S9 are detailed in docs/sender-plan.md; DeepSeek contacts packages C1–C4 are in docs/contacts-deepseek.md. S0–S2 remain `not_started`; the platform-independent account, job, submission, SMTP, API-key, and send-API cores are present but blocked from acceptance by the missing foundation/runtime and verification evidence. Contact packages remain `not_started`.
 
 SMTP feasibility does not wait for IMAP feasibility. SMTP accounts may be configured without IMAP. The sender slice defers manual attachments/drafts, replies, inbox and Sent-folder APPEND to the full-mail milestones below. Its partially_accepted state records mixed SMTP recipient results and never triggers a whole-message resend. Contacts do not implement task or received-message links yet. These slice-specific plans govern current execution while the milestones below remain the whole-project backlog.
 
@@ -87,7 +87,7 @@ Status: blocked. Dependencies: 3. The isolated durable submission and SMTP worke
 
 ### Milestone 5 — Send-only API
 
-Status: in_progress. Dependencies: 4. The isolated API-key management core and coordinated migration 008 are implemented; the endpoint, shared HTTP/auth/CSRF wiring, database execution, and runtime verification remain blocked on the foundation.
+Status: blocked. Dependencies: 4. The isolated API-key management, send controller/service, validation, atomic idempotency/quota schema, OpenAPI, and tests are implemented. Shared bootstrap/route/request-ID wiring, migration execution, HTTP/concurrency verification, and the blocked durable-outbound dependencies prevent completion.
 
 **Work:** Implement only POST /api/v1/mail/send. Add hashed/revocable keys, mail:send sender scopes, rate limits, atomic idempotency, safe errors, OpenAPI and server-side examples. Callers supply and verify codes/links themselves. No incoming or external status-reading endpoints.
 

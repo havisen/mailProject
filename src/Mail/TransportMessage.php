@@ -15,6 +15,7 @@ final class TransportMessage
         public readonly string $fromEmail,
         public readonly string $fromName,
         public readonly ?string $replyTo,
+        public readonly string $replyToName,
         public readonly string $subject,
         public readonly string $text,
         public readonly ?string $html,

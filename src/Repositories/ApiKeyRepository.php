@@ -102,29 +102,62 @@ final class ApiKeyRepository implements ApiKeyStore
 
     public function revoke(string $publicId, string $revokedAt): bool
     {
-        $statement = $this->pdo->prepare(
-            'UPDATE api_keys SET revoked_at = :revoked_at WHERE public_id = :public_id AND revoked_at IS NULL'
-        );
-        $statement->execute([':revoked_at' => $revokedAt, ':public_id' => $publicId]);
-        if ($statement->rowCount() !== 1) {
-            return false;
+        $owned = !$this->pdo->inTransaction();
+        if ($owned) {
+            $this->pdo->beginTransaction();
         }
-        $id = $this->idForPublicId($publicId);
-        $this->audit($id, 'revoked', $revokedAt);
-        return true;
+        try {
+            $statement = $this->pdo->prepare(
+                'UPDATE api_keys SET revoked_at = :revoked_at WHERE public_id = :public_id AND revoked_at IS NULL'
+            );
+            $statement->execute([':revoked_at' => $revokedAt, ':public_id' => $publicId]);
+            if ($statement->rowCount() !== 1) {
+                if ($owned) {
+                    $this->pdo->commit();
+                }
+                return false;
+            }
+            $this->audit($this->idForPublicId($publicId), 'revoked', $revokedAt);
+            if ($owned) {
+                $this->pdo->commit();
+            }
+            return true;
+        } catch (\Throwable $throwable) {
+            if ($owned && $this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $throwable;
+        }
     }
 
     public function linkReplacement(string $oldPublicId, int $replacementId, string $recordedAt): bool
     {
-        $statement = $this->pdo->prepare(
-            'UPDATE api_keys SET replaced_by_key_id = :replacement WHERE public_id = :public_id'
-        );
-        $statement->execute([':replacement' => $replacementId, ':public_id' => $oldPublicId]);
-        if ($statement->rowCount() !== 1) {
-            return false;
+        $owned = !$this->pdo->inTransaction();
+        if ($owned) {
+            $this->pdo->beginTransaction();
         }
-        $this->audit($this->idForPublicId($oldPublicId), 'replacement_linked', $recordedAt);
-        return true;
+        try {
+            $statement = $this->pdo->prepare(
+                'UPDATE api_keys SET replaced_by_key_id = :replacement WHERE public_id = :public_id'
+            );
+            $statement->execute([':replacement' => $replacementId, ':public_id' => $oldPublicId]);
+            if ($statement->rowCount() !== 1) {
+                if ($owned) {
+                    $this->pdo->commit();
+                }
+                return false;
+            }
+            $this->audit($this->idForPublicId($oldPublicId), 'replacement_linked', $recordedAt);
+            if ($owned) {
+                $this->pdo->commit();
+            }
+            return true;
+        } catch (\Throwable $throwable) {
+            if ($owned && $this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $throwable;
+        }
     }
 
     public function publicIdExists(string $publicId): bool

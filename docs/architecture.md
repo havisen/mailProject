@@ -25,6 +25,8 @@ The implemented submission boundary commits an encrypted immutable snapshot and 
 
 The SMTP module now instruments RCPT and final DATA separately. A library exception is not itself proof of non-delivery. Conclusive DATA acceptance, mixed RCPT outcomes, and ambiguity are persisted as accepted, partially accepted, or uncertain; only definite pre-acceptance temporary failures can return to queued.
 
+The implemented API path is `ApiKeyMiddleware -> SendMailController -> SendRequestValidator -> ApiSendService -> SubmissionService`. Request throttling commits independently; account quota, encrypted content, outbound job, and HMAC idempotency mapping share one database transaction. No external read/status component exists.
+
 ## Critical invariants
 
 - Persistent remote identity: account + folder + UIDVALIDITY + UID.

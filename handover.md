@@ -1,64 +1,55 @@
 <!-- PROJECT HANDOVER RULE:
-Every contributor must read handover.md before starting work and update it
-before handing work over. Record changes, documentation, configuration names,
-migrations, tests and results, known issues, decisions, and the exact next step.
-Never record passwords, API keys, encryption keys, authentication codes, or
-private message contents. Every handover must repeat this requirement for the
-next contributor, who must follow the same rule.
+Every contributor must read handover.md before starting work and update it before handing work over.
+Record changes, documentation, configuration names, migrations, tests/results, known issues, decisions, and the exact next step.
+Never record passwords, API keys, encryption keys, authentication codes, or private message contents.
+Every handover must repeat this requirement for the next contributor, who must follow the same rule.
 -->
 
-# Project Handover
+# Project handover
 
-## Current state
+## Current state and latest changes
 
-Documentation and a mostly empty starter structure plus isolated SMTP account, database-job, and durable outgoing-submission cores. No end-to-end application feature is usable yet. `public/index.php` remains a minimal static introduction page; routing, bootstrap, authentication, templates, SMTP transport, and the send API are still placeholders. The worker CLI is implemented but cannot process feature work until migrations, configuration, and handlers are integrated.
+The repository contains isolated implementations for SMTP accounts and Assignments 06–10, but it is not an end-to-end application and must not be deployed. Assignment 08 added a PHPMailer 7 verified-TLS adapter, separate RCPT/final-DATA evidence, conservative partial/uncertain handling, bounded 1/2/4-minute retries with four attempts, authentication-failure account pausing, and the `smtp.send` handler. Assignment 09 added one-time high-entropy API-key issuance, Argon2id hash-only storage, explicit `mail:send` account scopes, Bearer middleware, revocation/replacement overlap, safe audit events, a settings template, and migration 008. Assignment 10 added the sole external controller/service for `POST /api/v1/mail/send`, strict JSON/recipient/IDNA/deadline validation, HMAC idempotency, request and recipient limits, atomic submission/job/quota/replay persistence, safe errors, OpenAPI, examples, and focused tests.
 
-## Latest changes
+Long details are in `docs/smtp-delivery.md`, `docs/api-keys.md`, `docs/api.md`, and `docs/handovers/08-smtp-delivery-worker.md`, `09-api-key-management.md`, and `10-send-only-api.md`. The assignment named `00-SHARED-CONTRACT.md`, but that file is absent; work followed `AGENTS.md`, this handover, `ROADMAP.md`, `docs/workstreams.md`, and the supplied assignments.
 
-Assignments 06 and 07 added migrations 007 and 003, atomic database job/account leases, independent queues, bounded cron runner/heartbeat/checkpoints, handler-owned expired recovery, encrypted immutable outgoing snapshots/recipients, browser operation deduplication, transactional submission/job creation, safe cancellation/claim transitions, recipient outcomes, and conservative uncertain-send recovery. Added `docs/jobs.md`, `docs/submissions.md`, both assignment handovers, and focused unit/disposable-database scripts. The old zero-byte `003_create_submissions_and_api_keys.php` placeholder was replaced before any migration execution; API idempotency remains later API ownership.
+The external API boundary remains strict: only the POST send endpoint; no status/read/inbox/contact/task/attachment/OTP generation or verification endpoint. The old sender was not modified.
 
-The assignment named `00-SHARED-CONTRACT.md`, but that file is absent. The implementation followed `AGENTS.md`, this handover, `ROADMAP.md`, and `docs/workstreams.md`, plus the assignment's explicit migration names.
+## Files and interfaces
 
-Integrated the usable SMTP account result from the supplied DeepSeek transcript. Added `CredentialCipher`, `EndpointPolicy`, migration 002, `AccountRepository`, `AccountService`, `SmtpConnectionTester`/`SmtpProbe`, and a dependency-free 40-check module test runner. Added `docs/accounts.md` and `docs/handovers/05-smtp-sending-accounts.md`; updated security, configuration, operations, roadmap, changelog, and sender handover documentation.
+Key new interfaces/classes are `SmtpTransport`, `SubmissionDeliveryStore`, `SendingAccountProvider`, `ApiKeyStore`, `ApiPrincipal`, `ApiKeyService`, `ApiKeyMiddleware`, `SendRequestValidator`, `ApiAccessRepository`, `ApiSendService`, and `SendMailController`. `SubmissionRequest` now accepts structured recipient objects while retaining string recipients for panel callers. `composer.json` declares PHP 8.4, PHPMailer 7.1, PSR HTTP contracts, and required extensions. `config/mail.php`, `config/queue.php`, and `config/api.php` hold nonsecret defaults.
 
-The transcript was not copied literally: its Markdown export had corrupted PHP syntax, and its proposed secretbox AAD construction would have used an invalid nonce length. The integrated implementation binds account context through a keyed BLAKE2b-derived secretbox key. The supplied attachment contains one SMTP-account work result; it does not contain implementations for the planned contacts C1–C4 packages, which remain not started.
+Shared integration remains intentionally unmodified: `routes/api.php` is still empty and no application bootstrap/dependency container/migration runner exists. The integration owner must register exactly `POST /api/v1/mail/send` behind request-ID and `ApiKeyMiddleware`, register `smtp.send` in the worker bootstrap, and protect API-key settings mutations with shared administrator authentication and CSRF. CORS stays disabled.
 
-Earlier planning split the work into `docs/sender-plan.md` (sender/platform S0–S9) and `docs/contacts-deepseek.md` (contacts C1–C4), with ownership and migration reservations in `docs/workstreams.md`.
+## Configuration and database
 
-Repository setup completed on 2026-10-23: initialized local `main`, added a root `.gitignore` covering environment files, Composer dependencies, test output, and private runtime storage, connected `origin` to `https://github.com/havisen/mailProject.git`, preserved the repository's existing initial commit, and pushed the combined history.
+No secrets are present. Existing private names include `security.credential_keys`, `security.active_key_id`, `security.content_keys`, `security.active_content_key_id`, `mail.message_id_domain`, and the documented mail/worker defaults. New API names are `security.api_fingerprint_key` (distinct random decoded value of at least 32 bytes), `api.maximum_body_bytes` (262144), `api.requests_per_minute_per_key` (30), `api.accepted_recipients_per_hour_per_account` (100), and `api.idempotency_retention_seconds` (604800). Secrets stay outside `public/`, the database where specified, logs, and version control.
 
-The external API is strictly POST /api/v1/mail/send. No read/status, inbox, contact/task, or OTP endpoints are planned. The sender slice does not depend on IMAP and defers drafts, attachments, replies and Sent APPEND. DeepSeek owns contacts only; the sender contributor owns shared authentication/bootstrap and integrates contacts after publishing that contract.
+No migration has been applied. Required order for this slice is 002 accounts, 003 submissions, 007 jobs, then 008 API access. Migration 008 creates API keys/account mappings, seven-day idempotency responses, atomic rate buckets, and safe key audit events. It was coordinated for Assignments 09/10 before application and must not be rewritten after use. There are no down migrations; back up and test restore before production changes.
 
-## Architecture and decisions
+## Verification and results
 
-Read `docs/architecture.md`, `docs/api.md`, `docs/accounts.md`, and `ROADMAP.md`. Target: cPanel, PHP 8.4, MySQL/MariaDB, one administrator, standard IMAP/SMTP providers, cron jobs, and a separate deployment from the old sender. Package compatibility and hosting capabilities remain unverified. The S3 core exists only as isolated code; S0–S2 are still required before integration.
+Implemented checks are:
 
-## Environment and configuration
+- `php tests/Unit/run-unit.php`
+- `php tests/Unit/run-jobs.php`
+- `php tests/Unit/run-submissions.php`
+- `php tests/Unit/run-smtp-delivery.php`
+- `php tests/Unit/run-api-keys.php`
+- `php tests/Unit/run-send-api.php`
+- `php tests/Integration/run-jobs-and-submissions.php`
+- `php tests/Integration/run-send-api.php`
 
-No runtime or hosting environment has been configured. No secrets are present. Existing SMTP names remain `security.credential_keys`, `security.active_key_id`, `mail.approved_endpoints`, `mail.connect_timeout_seconds`, and `mail.operation_timeout_seconds`. New worker CLI names are `MAILPANEL_DB_DSN`, `MAILPANEL_DB_USER`, and `MAILPANEL_DB_PASSWORD`. New unwired submission names are `security.content_keys`, `security.active_content_key_id`, `mail.message_id_domain`, `mail.submission_default_deadline_seconds`, and `mail.submission_maximum_deadline_seconds`. `config/queue.php` contains the implemented 40-second budget, 30-second lease, five-second start margin, recovery limit, and independent queue priorities.
+The integration scripts require a disposable MySQL/MariaDB schema and the variables documented in `docs/testing.md`; they destructively reset module tables. PHP, Composer, MySQL/MariaDB, Docker, Podman, and a mail fixture are unavailable on this host, so none of the PHP/runtime/database/SMTP/HTTP checks ran. A pinned PHP parser syntax gate passed across all 54 nonempty PHP files, `composer.json` parsed, OpenAPI YAML parsed and contained only the intended POST path, and diff checks passed except expected line-ending warnings. These static checks are not runtime acceptance or full OpenAPI behavioral validation.
 
-## Database
+Unverified: Composer resolution, all migrations and concurrency semantics, Argon2id/Sodium at runtime, actual PSR-7 middleware/controller behavior, two-connection idempotency/rate races, controlled SMTP RCPT/DATA/timeout/crash cases, real-provider/cPanel TLS and limits, storage exhaustion, cleanup/retention, backup/restore, authenticated panel CSRF, accessibility, and deployment.
 
-No schema has been applied and no production database exists. Unapplied migration 002 defines `mail_accounts`; new unapplied 003 defines submissions/encrypted recipients/outcomes; new unapplied 007 defines jobs/account leases/worker runs. Apply in that dependency order through the still-missing migration runner. Do not treat filenames as executed migrations. API idempotency/API-key schema is not included.
+## Known issues and decisions
 
-## Verification
+The missing foundation (hosting checks, bootstrap, configuration validation, checksum migration runner, administrator session/CSRF, request IDs, route/container wiring) blocks feature completion. `public/index.php` remains a static introduction. The API returns no status URL and SMTP cannot guarantee exactly-once delivery. Revocation blocks new/replay HTTP authorization but does not cancel previously queued submissions. Expired/in-flight or post-acceptance-persistence sends become uncertain and never automatically resend. Bcc is encrypted/envelope-only. API content has no attachments. Restore must start with API/outbound disabled and queued/in-flight work reconciled.
 
-The SMTP integration was reviewed against the transcript and project contracts. `tests/Unit/run-unit.php` contains 40 account checks. New `tests/Unit/run-jobs.php`, `tests/Unit/run-submissions.php`, and opt-in `tests/Integration/run-jobs-and-submissions.php` cover worker recovery/budgets, validation/privacy/encryption, transactional rollback/deduplication/cancellation/uncertain recovery, and account locking. PHP, Composer, MySQL/MariaDB, and container runtimes are unavailable on this Windows machine, so none of those scripts or migrations ran. A pinned `php-parser` 3.2.5 syntax parse passed for all new/related PHP files; this is not PHP runtime or database acceptance. No HTTP, controlled SMTP fixture, real-provider, hosting, or accessibility checks have run.
+## Exact next step
 
-Repository preparation checks: reviewed hidden and large files, scanned tracked content for common secret assignments, staged the complete tree, and ran `git diff --cached --check`. No credential values or oversized files were identified. Remote connectivity, history integration, branch tracking, and the initial `main` push were verified.
-
-## Known issues and limitations
-
-The scaffold is deliberately nonfunctional. `composer.json`, application bootstrap, routes, middleware, account controller/templates, and `.htaccess` are still empty. There is no migration runner or dependency container. The real PHPMailer adapter and `smtp.send` handler are missing; `bootstrap/worker.php` has no registrations. Migrations 002/003/007, SQL concurrency, runtime crypto, DNS policy, provider TLS/authentication, HTTP authentication/CSRF, content cleanup, backup, and restore are unverified. Never register a generic SMTP retry: Assignment 08 must claim the submission and call its conservative expired-send recovery. API idempotency remains Assignment 10 and attachments remain Assignment 16.
-
-## Next step
-
-Complete S0 by checking PHP web/CLI, required extensions, private storage, database grants, one-minute cron, certificate trust, and SMTP 465/587. Then implement S1/S2 (Composer/bootstrap, validated configuration, checksum migration runner, administrator sessions, CSRF, and panel shell). Apply migrations 002, 003, and 007 to a disposable database and run all three unit runners plus `tests/Integration/run-jobs-and-submissions.php`. After those pass, wire accounts and Assignment 08's SMTP handler using `SubmissionService::claimForSending()`, terminal/retry methods, and `recoverExpiredSend()`; keep outbound disabled until controlled transport tests pass.
-
-Contacts contributor: no C1–C4 implementation was present in the supplied attachment. Read `docs/contacts-deepseek.md` and `docs/workstreams.md`; begin C1/C2 in isolated contact files and migration 010. Authenticated HTTP verification waits for S1/S2. Do not edit sender/shared platform files. Every contributor updates root `handover.md` and their workstream handover; the integrator merges both factual updates.
-
-## Required instruction for the next contributor
-
-Read handover.md before starting, update it before handing work over, and explicitly tell the next contributor to do the same. Record implementation changes, documentation, configuration names, migrations, checks and results, known issues, decisions, and the exact next step. Never include secret values or private mail contents.
+Complete hosting/foundation work first: install PHP 8.4/Composer and required extensions, verify private storage/database grants/cron/CA trust/SMTP connectivity, implement validated bootstrap plus checksum migration runner and administrator auth/CSRF/request IDs. Then wire the route, middleware, services, and worker handler; apply 002/003/007/008 to a disposable database; run every command above plus real two-process concurrency and controlled verified-TLS SMTP fixtures; validate actual HTTP responses against `docs/openapi.yaml`. Keep outbound and public API disabled until those checks pass.
 
 **Read and update handover.md before handing over, and require the next contributor to do the same.**

@@ -42,7 +42,7 @@ final class PhpMailerSmtpTransport implements SmtpTransport
         $mailer->XMailer = null;
         $mailer->setFrom($message->fromEmail, $message->fromName, false);
         if ($message->replyTo !== null) {
-            $mailer->addReplyTo($message->replyTo);
+            $mailer->addReplyTo($message->replyTo, $message->replyToName);
         }
         foreach ($message->recipients as $recipient) {
             match ($recipient['type']) {
