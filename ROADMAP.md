@@ -31,6 +31,8 @@ Teams, tenants, public signup, OAuth, Proton Bridge, webhooks, marketing/bulk se
 
 Read AGENTS.md and handover.md; verify prerequisites; split the active milestone into small tickets with concrete acceptance criteria; implement only that milestone; run relevant checks; update the matching documentation, this roadmap, CHANGELOG.md, and handover.md. Hand over the exact next task and require the next contributor to update handover.md too.
 
+Delegated DeepSeek work should use `prompts/deepseek-v4.1-flash/RUN-ONE-AND-REPORT.md` with one target prompt. Review its evidence packet and repository diff before authorizing the next package; the packet is not acceptance evidence by itself.
+
 Track each milestone as not_started, in_progress, blocked, or complete. A blocked milestone must state the missing condition and resolution path. Complete means implemented, verified, failure behavior checked, operational changes documented, and handover updated. Do not mark placeholders complete.
 
 ## Milestones

@@ -65,4 +65,6 @@ For delegated implementation, `DEEPSEEK-V4.1-FLASH-OUTBOUND-INTEGRATION.md` is a
 
 The ordered prompt pack in `prompts/deepseek-v4.1-flash/` covers prerequisite verification and steps 9–17. Each run loads one small task plus shared rules and stops after one milestone/sub-package, minimizing context and preserving dependency order. Its index also points to the existing outbound integration prompt for steps 4–8.
 
+`prompts/deepseek-v4.1-flash/RUN-ONE-AND-REPORT.md` is the monitoring wrapper for delegated runs. Give it exactly one target prompt; DeepSeek must stop after the first incomplete package and return the standardized evidence packet. Review the packet together with the working-tree diff before allowing the next package. The packet does not replace runtime, database, controlled-provider, or deployment evidence.
+
 **Read and update handover.md before handing over, and require the next contributor to do the same.**

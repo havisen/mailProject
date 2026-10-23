@@ -11,6 +11,7 @@ next contributor, who must follow the same rule.
 
 ## Unreleased
 
+- Added a token-efficient DeepSeek single-task wrapper with a fixed review packet, git/test evidence, secret-redaction rules, and a mandatory stop before the next package.
 - Added Milestone 2 administrator access: single-admin CLI provisioning/recovery, Argon2id passwords, hash-only versioned database sessions, idle/absolute expiry, Secure/HttpOnly/SameSite cookies, login and authenticated CSRF, database email/IP throttling, password change/logout, protected Slim routes, safe audits/security headers, migrations, tests, and documentation. Runtime/database/HTTPS verification remains blocked on this host.
 - Added the shared foundation runtime: strict environment validation, MySQL PDO setup, private redacted JSON logs, random request IDs, fail-closed Slim bootstrap, checksum/lock migration runner, CLI migration and preflight commands, and focused configuration/migration tests. Dependencies are declared but not installed or locked; runtime/database verification remains blocked on this host.
 - Added Assignment 06 database jobs: atomic leased claims, per-account serialization, handler-owned expired recovery, resumable checkpoints, worker heartbeats, independent queues, a bounded CLI, tests, and operations documentation. Migration 007 is not applied or database-verified.

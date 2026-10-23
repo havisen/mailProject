@@ -2,6 +2,8 @@
 
 Run one prompt at a time in this order. Tell DeepSeek to execute the named file; each task loads `00-COMMON.md` itself and stops after one milestone or sub-package.
 
+For monitored runs, launch every task through `RUN-ONE-AND-REPORT.md`. It limits DeepSeek to one package and produces a consistent evidence packet for Codex review before the next task begins.
+
 1. `01-RUNTIME-FOUNDATION-AUTH-VERIFY.md`
 2. Repository-root `DEEPSEEK-V4.1-FLASH-OUTBOUND-INTEGRATION.md` repeatedly until gates A–E are accepted
 3. `09-CLEANUP-BACKUP-SENDER-RECOVERY.md`
