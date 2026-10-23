@@ -30,6 +30,7 @@ Use disposable mailboxes and databases. Run real provider tests against cPanel a
 - `php tests/Unit/run-submissions.php`: immutable normalization, recipient deduplication, header injection, sender authorization, attachment boundaries, deadlines, Bcc-safe response, and contextual encryption.
 - `php tests/Integration/run-jobs-and-submissions.php`: opt-in destructive reset of a disposable MySQL/MariaDB schema followed by atomic commit/rollback, browser-operation idempotency/conflict, cancellation race, interrupted-send uncertainty, and account-lease overlap checks. Required variables and exact command are in `docs/submissions.md`.
 - `php tests/Unit/run-smtp-delivery.php`: controlled transport-double outcomes for acceptance, partial acceptance, temporary retries, attempt ceiling, DATA uncertainty, disabled accounts, lease recovery, and persistence failure after acceptance.
+- `php tests/Unit/run-api-keys.php`: one-time issuance, hash-only persistence, valid/invalid/revoked authentication, sender-account scope, replacement overlap, and explicit revocation.
 
 None ran on the current Windows machine because PHP, a database client/server, and container runtime are unavailable. These scripts are test doubles/database acceptance only; they are not real SMTP-provider evidence. Neighboring `tests/Unit/run-unit.php` must also run when the PHP environment becomes available.
 

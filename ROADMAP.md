@@ -87,7 +87,7 @@ Status: blocked. Dependencies: 3. The isolated durable submission and SMTP worke
 
 ### Milestone 5 — Send-only API
 
-Status: not_started. Dependencies: 4.
+Status: in_progress. Dependencies: 4. The isolated API-key management core and coordinated migration 008 are implemented; the endpoint, shared HTTP/auth/CSRF wiring, database execution, and runtime verification remain blocked on the foundation.
 
 **Work:** Implement only POST /api/v1/mail/send. Add hashed/revocable keys, mail:send sender scopes, rate limits, atomic idempotency, safe errors, OpenAPI and server-side examples. Callers supply and verify codes/links themselves. No incoming or external status-reading endpoints.
 

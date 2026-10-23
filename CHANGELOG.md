@@ -14,6 +14,7 @@ next contributor, who must follow the same rule.
 - Added Assignment 06 database jobs: atomic leased claims, per-account serialization, handler-owned expired recovery, resumable checkpoints, worker heartbeats, independent queues, a bounded CLI, tests, and operations documentation. Migration 007 is not applied or database-verified.
 - Added Assignment 07 outgoing persistence: encrypted immutable snapshots and recipients, stable IDs/Message-IDs, transactional enqueue, browser operation deduplication, safe cancellation/claim transitions, recipient outcomes, conservative retry/uncertain recovery, tests, and documentation. Migration 003 is not applied or database-verified.
 - Added Assignment 08 SMTP delivery: PHPMailer 7 verified-TLS adapter, separate RCPT/DATA instrumentation, safe partial/uncertain outcomes, bounded retries, account authentication-failure pausing, controlled worker doubles, and operations documentation. Runtime/transport verification remains blocked.
+- Added Assignment 09 API keys: one-time high-entropy issuance, Argon2id hash-only persistence, `mail:send` account scopes, Bearer middleware, revocation/replacement overlap, safe audit events, settings template, coordinated migration 008, tests, and documentation. HTTP/database verification remains blocked.
 
 ## SMTP account core — partial sender package S3
 

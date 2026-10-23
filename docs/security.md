@@ -35,3 +35,7 @@ These controls have not been runtime-tested on this machine. The real SMTP adapt
 `detailForAuthenticatedUi()` returns decrypted private content and must only be wired behind shared administrator authentication. No controller/route exists, so CSRF and authorization are not yet verified. Do not log its return value. Database backups contain ciphertext but remain sensitive; losing content keys prevents recovery, while leaking them with a backup reveals queued content.
 
 The PHPMailer adapter forces verified peer/hostname TLS, rejects self-signed certificates, disables debug output, clears the in-memory password after the attempt, and persists only safe outcome categories/numeric facts. Bcc is envelope-only. There is no configuration escape hatch for certificate verification.
+
+## Implemented API-key boundary
+
+API credentials use random 256-bit secret material plus a collision-resistant nonsecret prefix. Only Argon2id hashes are stored. Authentication performs a dummy hash verification for unknown prefixes, accepts only one Bearer header, rejects token-like query parameters, and yields an explicit `mail:send`/account principal. Revocation takes effect before replay authorization. Replacement supports an administrator-controlled overlap; it does not silently revoke the old key or cancel queued submissions. Safe audit events contain lifecycle type and key reference only. Shared administrator authentication/CSRF still must protect the settings actions before the template is routable.

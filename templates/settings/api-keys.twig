@@ -1,0 +1,42 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<h1>API keys</h1>
+<p>Keys can only submit mail through approved sending accounts. The secret is shown once.</p>
+
+{% if issued_key %}
+  <section role="status" aria-live="polite">
+    <h2>Copy this key now</h2>
+    <code>{{ issued_key.secret }}</code>
+    <p>It cannot be displayed again.</p>
+  </section>
+{% endif %}
+
+<form method="post" action="/settings/api-keys">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>Label <input name="label" maxlength="120" required></label>
+  <fieldset>
+    <legend>Allowed sending accounts</legend>
+    {% for account in accounts %}
+      <label><input type="checkbox" name="account_ids[]" value="{{ account.public_id }}"> {{ account.label }}</label>
+    {% endfor %}
+  </fieldset>
+  <button type="submit">Create key</button>
+</form>
+
+<h2>Existing keys</h2>
+{% for key in keys %}
+  <article>
+    <strong>{{ key.label }}</strong> <code>{{ key.lookup_prefix }}…</code>
+    {% if key.revoked_at %}<span>Revoked</span>{% endif %}
+    {% if not key.revoked_at %}
+      <form method="post" action="/settings/api-keys/{{ key.public_id }}/revoke">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit">Revoke</button>
+      </form>
+    {% endif %}
+  </article>
+{% else %}
+  <p>No API keys.</p>
+{% endfor %}
+{% endblock %}

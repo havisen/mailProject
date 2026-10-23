@@ -29,6 +29,10 @@ The unapplied zero-byte `003_create_submissions_and_api_keys.php` placeholder wa
 
 queued -> sending -> accepted, failed, or uncertain; queued may also become expired or canceled. Track Sent-copy status separately. SMTP acceptance uncertainty requires review or reconciliation, never automatic resend. Use leased jobs and atomic idempotency constraints. Document final schema, indexes, migration commands, and rollback implications as implemented.
 
+## API access schema
+
+Unapplied migration `008_create_api_access.php` owns `api_keys`, `api_key_accounts`, `api_idempotency`, `api_rate_limit_buckets`, and `api_key_audit_events`. It depends on 002/003. Unique prefixes support hash lookup; account mappings constrain send scope; `(api_key_id, endpoint, identifier_hash)` serializes idempotency; bucket primary keys support atomic counters; audit rows contain only safe lifecycle event types. Hashes and HMAC outputs are binary/one-way values, not recoverable key or message content. Retain replay mappings for seven days after content cleanup. Migration execution and MySQL/MariaDB compatibility remain unverified.
+
 ## Active workstream split
 
 See docs/workstreams.md for migration ownership. Migration 002 contains the SMTP account schema but has not been applied. The combined empty 005 placeholder stays unused; contacts are isolated in migration 010. The sender slice additionally uses `partially_accepted` for mixed recipient outcomes and records per-recipient status; no automatically repeated full submission may include an already accepted recipient.

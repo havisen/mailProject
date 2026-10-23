@@ -13,11 +13,11 @@ next contributor, who must follow the same rule.
 
 The external API only submits outgoing email. No inbox reading, incoming messages, attachments download, contacts, tasks, mailbox administration, OTP creation, or OTP verification. The caller owns authentication code/link generation, expiry, and verification. All other product features are used through the authenticated panel.
 
-## Planned interface
+## Credential interface implemented; send endpoint pending
 
 POST /api/v1/mail/send is the sole external application endpoint. Status is visible inside the panel; this starter does not plan an external status-reading endpoint. This supersedes the earlier roadmap's optional submission-status endpoint and mail:status permission.
 
-Use Authorization: Bearer <key>, Content-Type: application/json, and a required Idempotency-Key. Keys are hashed, revocable, and restricted to allowed sending accounts with mail:send permission. Never expose them in browser JavaScript.
+Use Authorization: Bearer <key>, Content-Type: application/json, and a required Idempotency-Key. Assignment 09 now implements Argon2id-hashed, revocable keys restricted to allowed sending accounts with only `mail:send`. Bearer credentials in query strings and admin-session authentication are rejected. The route/controller remains Assignment 10. Never expose keys in browser JavaScript.
 
 ## Planned request
 
